@@ -1,0 +1,13 @@
+include README.md
+include COPYING
+include *.py
+include pyproject.toml
+recursive-include src *.py
+recursive-include tests *.py
+recursive-include examples *.py
+include examples/*.py
+global-exclude *.pyc
+global-exclude __pycache__
+global-exclude .git*
+global-exclude *.so
+global-exclude .DS_Store

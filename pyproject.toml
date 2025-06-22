@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sugar-toolkit-gtk4-py"
+version = "0.1.0"
+description = "A GTK4 port of the Sugar Toolkit for Python activities"
+readme = "README.md"
+license = {text = "LGPL-2.1-or-later"}
+authors = [
+    {name = "Sugar Labs Community", email = "sugar-devel@lists.sugarlabs.org"},
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers", 
+    "Intended Audience :: Education",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9", 
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Desktop Environment",
+    "Topic :: Education",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: User Interfaces",
+]
+requires-python = ">=3.8"
+dependencies = [
+    "PyGObject>=3.42.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=6.0",
+    "pytest-cov",
+    "black",
+    "flake8", 
+    "mypy",
+    "build",
+    "twine",
+]
+test = [
+    "pytest>=6.0", 
+    "pytest-cov",
+]
+
+[project.urls]
+Homepage = "https://github.com/sugarlabs/sugar-toolkit-gtk4-py"
+Repository = "https://github.com/sugarlabs/sugar-toolkit-gtk4-py.git"
+Issues = "https://github.com/sugarlabs/sugar-toolkit-gtk4-py/issues"
+
+[project.scripts]
+sugar-test = "sugar.__main__:main"
+
+[tool.setuptools.package-data]
+sugar = ["*.css", "*.ui", "*.glade", "*.svg", "*.png"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "--strict-markers",
+    "--strict-config", 
+    "--verbose",
+]
+markers = [
+    "slow: marks tests as slow",
+    "gtk: marks tests that require GTK4",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | build
+  | dist
+)/
+'''
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
