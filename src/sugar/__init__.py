@@ -20,9 +20,12 @@ __license__ = "LGPL-2.1-or-later"
 
 from .activity.activity import Activity, SimpleActivity
 from .graphics.xocolor import XoColor
+from .graphics.icon import Icon, EventIcon
 
 __all__ = [
     "Activity",
-    "SimpleActivity",
+    "SimpleActivity", 
     "XoColor",
+    "Icon",
+    "EventIcon",
 ]

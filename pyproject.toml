@@ -53,8 +53,7 @@ Issues = "https://github.com/sugarlabs/sugar-toolkit-gtk4-py/issues"
 sugar-test = "sugar.__main__:main"
 
 [tool.setuptools.package-data]
-sugar = ["*.css", "*.ui", "*.glade", "*.svg", "*.png"]
-
+sugar = ["*.css", "*.ui", "*.glade", "*.svg", "*.png", "graphics/icons/*.svg"]
 [tool.setuptools]
 package-dir = {"" = "src"}
 
