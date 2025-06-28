@@ -21,11 +21,26 @@ __license__ = "LGPL-2.1-or-later"
 from .activity.activity import Activity, SimpleActivity
 from .graphics.xocolor import XoColor
 from .graphics.icon import Icon, EventIcon
+# from .graphics.tray import HTray, VTray, TrayButton, TrayIcon
+# from .graphics.window import Window, UnfullscreenButton
+from .graphics.menuitem import MenuItem, MenuSeparator
+# from .graphics.toolbox import Toolbox
+from .graphics import style
 
 __all__ = [
     "Activity",
-    "SimpleActivity", 
+    "SimpleActivity",
     "XoColor",
     "Icon",
     "EventIcon",
+    # "HTray",
+    # "VTray",
+    # "TrayButton",
+    # "TrayIcon",
+    # "Window",
+    # "UnfullscreenButton",
+    "MenuItem",
+    "MenuSeparator",
+    # "Toolbox",
+    "style",
 ]
