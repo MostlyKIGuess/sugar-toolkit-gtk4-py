@@ -1,6 +1,6 @@
-.PHONY: help install install-dev test test-coverage format clean build upload check example tarball
+.PHONY: help install test test-coverage format clean build upload check example tarball
 
-help:  
+help:
 	@echo 'Usage: make [target]'
 	@echo ''
 	@echo 'Targets:'
@@ -9,9 +9,6 @@ help:
 install:  ## Install package in development mode
 	pip install -e .
 
-install-dev:  ## Install with development dependencies
-	pip install -e .[dev]
- 
 test:  ## Run all tests
 	pytest tests/ -v
 
