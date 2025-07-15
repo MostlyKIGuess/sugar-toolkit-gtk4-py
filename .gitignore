@@ -135,6 +135,5 @@ dmypy.json
 # Sugar toolkit specific
 *.activity
 *.xo
-activity/
 po/
 locale/
