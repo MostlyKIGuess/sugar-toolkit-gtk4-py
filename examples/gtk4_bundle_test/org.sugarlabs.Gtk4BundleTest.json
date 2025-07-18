@@ -1,0 +1,44 @@
+{
+  "app-id": "org.sugarlabs.Gtk4BundleTest",
+  "runtime": "org.gnome.Platform",
+  "runtime-version": "45",
+  "sdk": "org.gnome.Sdk",
+  "command": "org.sugarlabs.Gtk4BundleTest",
+  "finish-args": [
+    "--share=network",
+    "--socket=wayland",
+    "--socket=x11",
+    "--device=dri",
+    "--filesystem=host"
+  ],
+  "modules": [
+    {
+      "name": "python-builddeps",
+      "buildsystem": "simple",
+      "build-commands": [
+        "pip3 install --prefix=/app --no-build-isolation setuptools wheel pip"
+      ],
+      "sources": []
+    },
+    {
+      "name": "sugar-toolkit-gtk4-py",
+      "buildsystem": "simple",
+      "build-commands": [
+        "pip3 install --prefix=/app --no-build-isolation ."
+      ],
+      "sources": [
+        { "type": "dir", "path": "../../", "dest": "." }
+      ]
+    },
+    {
+      "name": "gtk4-bundle-test",
+      "buildsystem": "simple",
+      "build-commands": [
+        "install -Dm755 main.py /app/bin/org.sugarlabs.Gtk4BundleTest"
+      ],
+      "sources": [
+        { "type": "file", "path": "main.py" }
+      ]
+    }
+  ]
+}

@@ -14,18 +14,18 @@ This project is a ground-up reimplementation of the Sugar Toolkit using GTK4 and
 | **Activity** | Done | `sugar.activity` | Base activity class with GTK4 window management |
 | **SimpleActivity** | Done | `sugar.activity` | Quick-start activity template |
 | **Alert** | In Works | `sugar.graphics` | Dialog system for user notifications |
-| **Icon** | In Works | `sugar.graphics` | Sugar-style icon handling |
-| **Style** | In Works | `sugar.graphics` | Sugar visual styling constants |
-| **Window** | In Works | `sugar.graphics` | Enhanced window management |
-| **ToolbarBox** | In Works | `sugar.graphics` | Activity toolbar container |
+| **Icon** | Done | `sugar.graphics` | Sugar-style icon handling |
+| **Style** | Done | `sugar.graphics` | Sugar visual styling constants |
+| **Window** | Done | `sugar.graphics` | Enhanced window management |
+| **Palette** | Done | `sugar.graphics` | Includes all the Palette Systems |
+| **ToolbarBox** | Done | `sugar.graphics` | Activity toolbar container |
 
 - More to be Added!
-
-
 
 ## Installation
 
 ### From Source
+
 ```bash
 git clone https://github.com/sugarlabs/sugar-toolkit-gtk4-py.git
 cd sugar-toolkit-gtk4-py
@@ -33,8 +33,9 @@ pip install -e .
 ```
 
 ### Development Setup
+
 ```bash
-make install-dev
+make install
 ```
 
 ## Quick Start
@@ -48,7 +49,7 @@ from gi.repository import Gtk
 class MyActivity(SimpleActivity):
     def __init__(self):
         super().__init__()
-        
+
         # Your activity code here
         label = Gtk.Label(label="Hello, Welcome GTK4!")
         self.set_canvas(label)
@@ -56,12 +57,12 @@ class MyActivity(SimpleActivity):
 def main():
     """Run the activity with proper GTK4 application lifecycle."""
     app = Gtk.Application(application_id='org.sugarlabs.TestActivity')
-    
+
     def on_activate(app):
         activity = MyActivity()
         app.add_window(activity)
         activity.present()
-    
+
     app.connect('activate', on_activate)
     return app.run()
 
@@ -72,27 +73,31 @@ if __name__ == '__main__':
 ## Development
 
 ### Running Tests
+
 ```bash
 make test
 ```
 
 ### Running with Coverage
+
 ```bash
 make test-coverage
 ```
 
 ### Code Formatting
+
 ```bash
 make format
 ```
 
-
 ### Building Package
+
 ```bash
 make build
 ```
 
 ### Running Examples
+
 ```bash
 make example
 ```
@@ -102,13 +107,14 @@ make example
 The project includes a comprehensive Makefile with targets for all development, testing, and packaging workflows. Use `make help` to see all available targets.
 
 ### Installation and Setup
+
 ```bash
 make install          # Install package in development mode
-make install-dev      # Install with development dependencies
 make dev-setup        # Complete development environment setup
 ```
 
 ### Testing and Quality Assurance
+
 ```bash
 make test             # Run all tests
 make test-coverage    # Run tests with HTML coverage report
@@ -118,6 +124,7 @@ make dev-test         # Run full development test suite
 ```
 
 ### Building and Packaging
+
 ```bash
 make build            # Build wheel and source distributions
 make dist             # Alias for build
@@ -127,12 +134,14 @@ make dev-build        # Clean, build, and check package
 ```
 
 ### Publishing
+
 ```bash
 make upload-test      # Upload to Test PyPI
 make upload           # Upload to production PyPI
 ```
 
 ### Utilities
+
 ```bash
 make clean            # Remove build artifacts and cache files
 make example          # Run the basic activity example
@@ -144,17 +153,20 @@ make help             # Show all available targets with descriptions
 ### Development Workflow Examples
 
 **Setting up for development:**
+
 ```bash
 make dev-setup        # Install everything needed
 make test             # Verify setup works
 ```
 
 **Before committing changes:**
+
 ```bash
 make dev-test         # Run full test suite with formatting checks
 ```
 
 **Creating a release:**
+
 ```bash
 make dev-build        # Clean build and verify package integrity
 make tarball          # Create source distribution
@@ -162,11 +174,10 @@ make check            # Final verification before upload
 ```
 
 **Testing the complete CI workflow locally:**
+
 ```bash
 make ci-test          # Runs the full CI pipeline simulation
 ```
-
-
 
 ## Requirements
 
@@ -175,7 +186,15 @@ make ci-test          # Runs the full CI pipeline simulation
 - PyGObject 3.42+
 - GObject Introspection
 
-
 ## License
 
 LGPL-2.1-or-later
+
+## GTK4 App Bundling Example
+
+See [`examples/gtk4_bundle_test/`](examples/gtk4_bundle_test/) for a minimal example of bundling a GTK4 Sugar activity using Flatpak.
+
+- Includes a simple activity (`main.py`), Flatpak manifest, and build/run instructions.
+- To try it:
+  1. Install Flatpak and the GNOME SDK (see the example README).
+  2. Build and run the bundle as described in the example.
