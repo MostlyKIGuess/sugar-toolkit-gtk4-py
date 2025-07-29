@@ -51,18 +51,18 @@ STABLE.
 """
 
 import logging
+import os
 from typing import Optional
 
 import gi
-gi.require_version('Gtk', '4.0')
-from gi.repository import Gtk, GObject, Gdk, Gio, Gsk, Graphene
 
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk, GObject, Gdk, Gio, Gsk, Graphene
 
 
 from sugar.graphics.icon import Icon
 from sugar.graphics.palette import Palette, ToolInvoker
 from gi.repository import Pango
-
 
 
 def _add_accelerator(tool_button):
@@ -75,21 +75,25 @@ def _add_accelerator(tool_button):
         return
 
     # GTK4: Use application shortcuts instead of AccelGroup
-    app = root.get_application() if hasattr(root, 'get_application') else None
-    if app and hasattr(app, 'set_accels_for_action'):
+    app = root.get_application() if hasattr(root, "get_application") else None
+    if app and hasattr(app, "set_accels_for_action"):
         # Create a unique action name for this button
         action_name = f"toolbutton.{id(tool_button)}"
 
         # Add the action to trigger the button click
         action = Gio.SimpleAction.new(action_name, None)
-        action.connect('activate', lambda a, p: tool_button.emit('clicked'))
+        action.connect("activate", lambda a, p: tool_button.emit("clicked"))
 
-        if hasattr(app, 'add_action'):
+        if hasattr(app, "add_action"):
             app.add_action(action)
-            app.set_accels_for_action(f"app.{action_name}", [tool_button.props.accelerator])
-        elif hasattr(root, 'add_action'):
+            app.set_accels_for_action(
+                f"app.{action_name}", [tool_button.props.accelerator]
+            )
+        elif hasattr(root, "add_action"):
             root.add_action(action)
-            app.set_accels_for_action(f"win.{action_name}", [tool_button.props.accelerator])
+            app.set_accels_for_action(
+                f"win.{action_name}", [tool_button.props.accelerator]
+            )
 
 
 def _hierarchy_changed_cb(tool_button):
@@ -99,8 +103,10 @@ def _hierarchy_changed_cb(tool_button):
 def setup_accelerator(tool_button):
     _add_accelerator(tool_button)
     # GTK4: Connect to root notify signal since hierarchy-changed doesn't exist
-    if hasattr(tool_button, 'connect'):
-        tool_button.connect('notify::root', lambda *args: _hierarchy_changed_cb(tool_button))
+    if hasattr(tool_button, "connect"):
+        tool_button.connect(
+            "notify::root", lambda *args: _hierarchy_changed_cb(tool_button)
+        )
 
 
 class ToolButton(Gtk.Button):
@@ -118,14 +124,14 @@ class ToolButton(Gtk.Button):
     """
 
     def __init__(self, icon_name=None, **kwargs):
-        self._accelerator = kwargs.pop('accelerator', None)
-        self._tooltip = kwargs.pop('tooltip', None)
-        self._hide_tooltip_on_click = kwargs.pop('hide_tooltip_on_click', True)
+        self._accelerator = kwargs.pop("accelerator", None)
+        self._tooltip = kwargs.pop("tooltip", None)
+        self._hide_tooltip_on_click = kwargs.pop("hide_tooltip_on_click", True)
 
         super().__init__(**kwargs)
 
         # button styling for toolbar appearance
-        self.add_css_class('toolbar-button')
+        self.add_css_class("toolbar-button")
         self.set_has_frame(False)
         self.set_can_focus(True)
 
@@ -148,8 +154,8 @@ class ToolButton(Gtk.Button):
         if self._accelerator:
             self.set_accelerator(self._accelerator)
 
-        self.connect('destroy', self.__destroy_cb)
-        self.connect('clicked', self.__clicked_cb)
+        self.connect("destroy", self.__destroy_cb)
+        self.connect("clicked", self.__clicked_cb)
 
         self._apply_toolbar_button_css()
 
@@ -183,8 +189,7 @@ class ToolButton(Gtk.Button):
             css_provider = Gtk.CssProvider()
             css_provider.load_from_string(css)
             self.get_style_context().add_provider(
-                css_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+                css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
             )
         except Exception as e:
             logging.warning(f"Could not apply toolbar button CSS: {e}")
@@ -210,7 +215,7 @@ class ToolButton(Gtk.Button):
         """
         if tooltip is None:
             self._tooltip = None
-            if hasattr(self, '_palette_invoker') and self._palette_invoker:
+            if hasattr(self, "_palette_invoker") and self._palette_invoker:
                 self._palette_invoker.set_palette(None)
             return
 
@@ -233,7 +238,7 @@ class ToolButton(Gtk.Button):
         setter=set_tooltip,
         getter=get_tooltip,
         nick="Tooltip",
-        blurb="Tooltip text for the button"
+        blurb="Tooltip text for the button",
     )
 
     def get_hide_tooltip_on_click(self) -> bool:
@@ -260,7 +265,7 @@ class ToolButton(Gtk.Button):
         getter=get_hide_tooltip_on_click,
         setter=set_hide_tooltip_on_click,
         nick="Hide tooltip on click",
-        blurb="Whether to hide tooltip when button is clicked"
+        blurb="Whether to hide tooltip when button is clicked",
     )
 
     def set_accelerator(self, accelerator: Optional[str]):
@@ -285,21 +290,27 @@ class ToolButton(Gtk.Button):
         setter=set_accelerator,
         getter=get_accelerator,
         nick="Accelerator",
-        blurb="Keyboard accelerator for the button"
+        blurb="Keyboard accelerator for the button",
     )
 
     def set_icon_name(self, icon_name: Optional[str]):
         """Set the icon name for the button.
 
         Args:
-            icon_name: name of the themed icon.
+            icon_name: name of the themed icon or path to icon file.
         """
         if self._icon_widget:
             self._content_box.remove(self._icon_widget)
             self._icon_widget = None
 
         if icon_name:
-            self._icon_widget = Icon(icon_name=icon_name)
+            # Check if it's a file path or an icon name
+            if os.path.isabs(icon_name) or icon_name.endswith(
+                (".svg", ".png", ".jpg", ".jpeg")
+            ):
+                self._icon_widget = Icon(file_name=icon_name)
+            else:
+                self._icon_widget = Icon(icon_name=icon_name)
             self._content_box.prepend(self._icon_widget)
 
     def get_icon_name(self) -> Optional[str]:
@@ -308,7 +319,7 @@ class ToolButton(Gtk.Button):
         Returns:
             The icon name or None if no icon is set.
         """
-        if self._icon_widget and hasattr(self._icon_widget, 'get_icon_name'):
+        if self._icon_widget and hasattr(self._icon_widget, "get_icon_name"):
             return self._icon_widget.get_icon_name()
         return None
 
@@ -317,7 +328,7 @@ class ToolButton(Gtk.Button):
         setter=set_icon_name,
         getter=get_icon_name,
         nick="Icon name",
-        blurb="Name of the themed icon"
+        blurb="Name of the themed icon",
     )
 
     def set_icon_widget(self, icon_widget: Optional[Gtk.Widget]):
@@ -372,7 +383,7 @@ class ToolButton(Gtk.Button):
         setter=set_palette,
         getter=get_palette,
         nick="Palette",
-        blurb="Palette for the button"
+        blurb="Palette for the button",
     )
 
     def get_palette_invoker(self) -> Optional[ToolInvoker]:
@@ -392,15 +403,14 @@ class ToolButton(Gtk.Button):
         setter=set_palette_invoker,
         getter=get_palette_invoker,
         nick="Palette invoker",
-        blurb="Invoker for the palette"
+        blurb="Invoker for the palette",
     )
 
     def do_snapshot(self, snapshot):
         """GTK4 drawing implementation."""
         # Call parent implementation first
-        Gtk.Widget.do_snapshot(self,snapshot)
+        Gtk.Widget.do_snapshot(self, snapshot)
 
-        # Draw active state indicator if palette is up
         palette = self.get_palette()
         if palette and palette.is_up():
             # Get button allocation
@@ -424,22 +434,18 @@ class ToolButton(Gtk.Button):
                 snapshot.append_border(
                     rounded,
                     [2, 2, 2, 2],  # border widths
-                    [color, color, color, color]  # border colors
+                    [color, color, color, color],  # border colors
                 )
 
     def set_active(self, active: bool):
         if active:
-            self.add_css_class('active')
+            self.add_css_class("active")
         else:
-            self.remove_css_class('active')
+            self.remove_css_class("active")
 
     def get_active(self) -> bool:
         """Get the active state of the button."""
-        return self.has_css_class('active')
-
-
-# Backwards compatibility alias
-SugarToolButton = ToolButton
+        return self.has_css_class("active")
 
 
 def _apply_module_css():
@@ -473,9 +479,7 @@ def _apply_module_css():
         display = Gdk.Display.get_default()
         if display:
             Gtk.StyleContext.add_provider_for_display(
-                display,
-                css_provider,
-                Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+                display, css_provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
             )
     except Exception as e:
         logging.warning(f"Could not apply module CSS: {e}")
@@ -485,10 +489,3 @@ try:
     _apply_module_css()
 except Exception:
     pass
-
-
-__all__ = [
-    'ToolButton',
-    'SugarToolButton',  # Backwards compatibility
-    'setup_accelerator',
-]

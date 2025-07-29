@@ -6,6 +6,12 @@ __pycache__/
 # C extensions
 *.so
 
+# flatpak-builder
+
+.flatpak-builder/
+examples/gtk4_bundle_test/repo 
+examples/gtk4_bundle_test/build-dir
+
 # Distribution / packaging
 .Python
 build/
