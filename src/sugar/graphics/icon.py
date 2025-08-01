@@ -670,6 +670,8 @@ class Icon(Gtk.Widget):
         return self._buffer._get_xo_color()
 
     def set_xo_color(self, xo_color: Optional[XoColor]):
+        if not hasattr(self, '_buffer') or self._buffer is None:
+            self._buffer = _IconBuffer()
         if self._buffer._get_xo_color() != xo_color:
             self._buffer._set_xo_color(xo_color)
             self.queue_draw()
@@ -1084,6 +1086,5 @@ except (ImportError, ValueError):
 
     Graphene = _GrapheneMock()
 
-# Set CSS name for CanvasIcon
 if hasattr(CanvasIcon, "set_css_name"):
     CanvasIcon.set_css_name("canvas-icon")

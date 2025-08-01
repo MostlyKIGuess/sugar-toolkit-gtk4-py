@@ -22,6 +22,7 @@
 
 
 import logging
+import os
 
 import gi
 gi.require_version('Gtk', '4.0')
@@ -36,6 +37,7 @@ from sugar.graphics.icon import CellRendererIcon
 
 
 _pointer = None
+SUGAR_DEBUG = os.environ.get('SUGAR_DEBUG', '0') == '1'
 
 
 def _get_pointer_position(widget):
@@ -374,12 +376,14 @@ class _PaletteWindowWidget(Gtk.Window):
         """Show the window."""
         if self.get_visible():
             return
+        print("PaletteWindow.popup called")
         self.present()
 
     def popdown(self):
         """Hide the window."""
         if not self.get_visible():
             return
+        print("PaletteWindow.popdown called")
         self.set_visible(False)
 
 
@@ -684,6 +688,7 @@ class PaletteWindow(GObject.GObject):
 
     def popup(self, immediate=False):
         """Show the palette."""
+        print(f"PaletteWindow.popup called with immediate={immediate}")
         if self._widget is None:
             return
 
@@ -717,6 +722,9 @@ class PaletteWindow(GObject.GObject):
 
     def popdown(self, immediate=False):
         """Hide the palette."""
+        if SUGAR_DEBUG:
+            print(f"PaletteWindow.popdown called with immediate={immediate}")
+            print(f"PaletteWindow.popdown: is_up={self._up}, widget={self._widget}")
         self._popup_anim.stop()
         self._mouse_detector.stop()
 
@@ -726,8 +734,12 @@ class PaletteWindow(GObject.GObject):
             self._popdown_anim.stop()
             if self._widget is not None:
                 if hasattr(self._widget, 'popdown'):
+                    if SUGAR_DEBUG:
+                        print("PaletteWindow.popdown: calling widget.popdown()")
                     self._widget.popdown()
                 else:
+                    if SUGAR_DEBUG:
+                        print("PaletteWindow.popdown: setting widget invisible")
                     self._widget.set_visible(False)
 
     def on_invoker_enter(self):
@@ -756,9 +768,12 @@ class PaletteWindow(GObject.GObject):
         self.popup(immediate=True)
 
     def _invoker_toggle_state_cb(self, invoker):
+        print(f"PaletteWindow._invoker_toggle_state_cb called with invoker={invoker}")
         if self.is_up():
+            print("PaletteWindow._invoker_toggle_state_cb: palette is up, calling popdown")
             self.popdown(immediate=True)
         else:
+            print("PaletteWindow._invoker_toggle_state_cb: palette is down, calling popup")
             self.popup(immediate=True)
 
     def __enter_notify_cb(self, widget):
@@ -1082,7 +1097,9 @@ class Invoker(GObject.GObject):
         self.emit('right-click')
 
     def notify_toggle_state(self):
+        print("ToolInvoker.notify_toggle_state called")
         self._ensure_palette_exists()
+        print("ToolInvoker emitting 'toggle-state' signal")
         self.emit('toggle-state')
 
     def _process_event(self, x, y):
@@ -1201,6 +1218,11 @@ class WidgetInvoker(Invoker):
         if not self._widget:
             return
 
+        # Ensure widget is focusable and sensitive for event handling
+        self._widget.set_can_focus(True)
+        self._widget.set_sensitive(True)
+        print(f"WidgetInvoker._setup_controllers: set_can_focus and set_sensitive for {self._widget}")
+
         # Motion controller for enter/leave events
         self._motion_controller = Gtk.EventControllerMotion()
         self._motion_controller.connect('enter', self.__enter_notify_event_cb)
@@ -1220,6 +1242,7 @@ class WidgetInvoker(Invoker):
         # Connect to clicked signal if available
         try:
             if GObject.signal_lookup('clicked', self._widget):
+                print(f"WidgetInvoker._setup_controllers: connecting to 'clicked' signal for {self._widget}")
                 self._widget.connect('clicked', self.__click_event_cb)
         except (TypeError, AttributeError):
             pass
@@ -1294,16 +1317,20 @@ class WidgetInvoker(Invoker):
     def __button_release_event_cb(self, gesture, n_press, x, y):
         button = gesture.get_current_button()
 
+        print(f"ToolInvoker.__button_release_event_cb called: button={button}, n_press={n_press}, x={x}, y={y}")
         if button == 3:  # Right click
+            print("ToolInvoker: right click detected")
             self.notify_right_click(x, y)
             return True
         elif button == 1:  # Left click
+            print("ToolInvoker: left click detected")
             if self._lock_palette and not self.locked:
                 self.locked = True
                 if hasattr(self.parent, 'set_expanded'):
                     self.parent.set_expanded(True) # type: ignore
 
             if self._toggle_palette:
+                print("ToolInvoker: toggle_palette is True, calling notify_toggle_state")
                 self.notify_toggle_state()
                 return True
         return False
@@ -1313,6 +1340,7 @@ class WidgetInvoker(Invoker):
         self.notify_right_click(x, y)
 
     def __click_event_cb(self, widget):
+        print(f"WidgetInvoker.__click_event_cb: 'clicked' signal received for {widget}")
         if not self._long_pressed_recognized:
             if self._lock_palette and not self.locked:
                 self.locked = True
@@ -1320,6 +1348,7 @@ class WidgetInvoker(Invoker):
                     self.parent.set_expanded(True) # type: ignore
 
             if self._toggle_palette:
+                print("WidgetInvoker.__click_event_cb: toggle_palette is True, calling notify_toggle_state")
                 self.notify_toggle_state()
         self._long_pressed_recognized = False
 
@@ -1516,8 +1545,6 @@ class ToolInvoker(WidgetInvoker):
         super().notify_popdown()
         if self._tool:
             self._tool.queue_draw()
-
-
 
 class TreeViewInvoker(Invoker):
     """Invoker for TreeView cells."""

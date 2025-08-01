@@ -65,6 +65,9 @@ from sugar.graphics.palette import Palette, ToolInvoker
 from gi.repository import Pango
 
 
+SUGAR_DEBUG = os.environ.get('SUGAR_DEBUG', '0') == '1'
+
+
 def _add_accelerator(tool_button):
     """Add accelerator to tool button."""
     if not tool_button.props.accelerator:
@@ -200,11 +203,20 @@ class ToolButton(Gtk.Button):
             self._palette_invoker = None
 
     def __clicked_cb(self, button):
+        if SUGAR_DEBUG:
+            print(f"ToolButton.__clicked_cb: 'clicked' signal received for {button}")
+        # Hide tooltip if needed
         if self._hide_tooltip_on_click and self.get_palette():
             palette = self.get_palette()
             if palette is not None:
                 if palette.is_up():
                     palette.popdown(immediate=True)
+        # Explicitly trigger palette invoker toggle if present
+        invoker = self.get_palette_invoker()
+        if invoker and getattr(invoker, '_toggle_palette', False):
+            if SUGAR_DEBUG:
+                print("ToolButton.__clicked_cb: calling invoker.notify_toggle_state()")
+            invoker.notify_toggle_state()
 
     def set_tooltip(self, tooltip: Optional[str]):
         """
