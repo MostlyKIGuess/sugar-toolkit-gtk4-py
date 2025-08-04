@@ -306,23 +306,18 @@ class ToolButton(Gtk.Button):
     )
 
     def set_icon_name(self, icon_name: Optional[str]):
-        """Set the icon name for the button.
-
-        Args:
-            icon_name: name of the themed icon or path to icon file.
-        """
+        print(f"[ToolButton] set_icon_name called with: {icon_name}")
         if self._icon_widget:
             self._content_box.remove(self._icon_widget)
             self._icon_widget = None
-
         if icon_name:
-            # Check if it's a file path or an icon name
-            if os.path.isabs(icon_name) or icon_name.endswith(
-                (".svg", ".png", ".jpg", ".jpeg")
-            ):
-                self._icon_widget = Icon(file_name=icon_name)
+            import os
+            if os.path.isabs(icon_name) or icon_name.endswith(('.svg', '.png', '.jpg', '.jpeg')):
+                print(f"[ToolButton] Icon file exists: {os.path.exists(icon_name)} at {icon_name}")
+                self._icon_widget = Gtk.Image.new_from_file(icon_name)
             else:
-                self._icon_widget = Icon(icon_name=icon_name)
+                print(f"[ToolButton] Using icon name: {icon_name}")
+                self._icon_widget = Gtk.Image.new_from_icon_name(icon_name)
             self._content_box.prepend(self._icon_widget)
 
     def get_icon_name(self) -> Optional[str]:
@@ -331,7 +326,7 @@ class ToolButton(Gtk.Button):
         Returns:
             The icon name or None if no icon is set.
         """
-        if self._icon_widget and hasattr(self._icon_widget, "get_icon_name"):
+        if self._icon_widget and isinstance(self._icon_widget, Gtk.Image):
             return self._icon_widget.get_icon_name()
         return None
 
