@@ -11,14 +11,19 @@ This project is a ground-up reimplementation of the Sugar Toolkit using GTK4 and
 | Component | Status | Module | Description |
 |-----------|--------|---------|-------------|
 | **XoColor** | Done | `sugar.graphics` | Color handling with Sugar's standard palette |
-| **Activity** | Done | `sugar.activity` | Base activity class with GTK4 window management |
+| **Activity** | Done | `sugar.activity` | Base activity class with GTK4 window & lifecycle integration |
 | **SimpleActivity** | Done | `sugar.activity` | Quick-start activity template |
-| **Alert** | In Works | `sugar.graphics` | Dialog system for user notifications |
+| **Alert** | Done | `sugar.graphics` | Dialog system for user notifications (in-window alerts) |
 | **Icon** | Done | `sugar.graphics` | Sugar-style icon handling |
 | **Style** | Done | `sugar.graphics` | Sugar visual styling constants |
-| **Window** | Done | `sugar.graphics` | Enhanced window management |
-| **Palette** | Done | `sugar.graphics` | Includes all the Palette Systems |
+| **Window** | Done | `sugar.graphics` | Enhanced window management for GTK4 |
+| **Palette** | Done | `sugar.graphics` | Full Palette system (popups, groups, menus, invokers) |
 | **ToolbarBox** | Done | `sugar.graphics` | Activity toolbar container |
+| **ToolButton** | Done | `sugar.graphics` | GTK4 ToolButton and RadioToolButton implementations |
+| **Tray** | Done | `sugar.graphics` | Tray widgets and integration helpers |
+| **Datastore** | Done | `sugar.datastore` | Journal/datastore helpers: create/read/write/find activity objects |
+| **Presence** | Done | `sugar.presence` | Telepathy/Presence integration (sharing, buddies, activity discovery) |
+| **Bundle** | In Works | `sugar.bundle` | Activity bundle helpers and metadata (bundle path, icon, manifest helpers) |
 
 - More to be Added!
 
@@ -177,6 +182,18 @@ make check            # Final verification before upload
 
 ```bash
 make ci-test          # Runs the full CI pipeline simulation
+```
+
+# Dev Tips:
+
+- Run the examples with:
+```
+ GTK_DEBUG=interactive QT_QPA_PLATFORM=xcb GDK_BACKEND=x11 \
+SUGAR_BUNDLE_PATH="$(pwd)/examples" \
+SUGAR_BUNDLE_ID="org.sugarlabs.SugarTextEditor" \
+SUGAR_BUNDLE_NAME="Sugar Text Editor" \
+SUGAR_ACTIVITY_ROOT="/tmp/sugar_text_editor" \
+python examples/activity_examples.py
 ```
 
 ## Requirements
