@@ -488,10 +488,12 @@ def _setup_page(page_widget, color, hpad):
 def _embed_page(page_widget, page):
     page.show()
 
-    # GTK4: Use Box instead of Alignment
+    # Box instead of Alignment
     container = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
     container.set_hexpand(True)
-    container.set_vexpand(True)
+    # Prevent the embedded toolbar/page container from expanding vertically.
+    # The toolbar should not absorb extra vertical space; keep it compact.
+    container.set_vexpand(False)
     container.append(page)
     container.show()
 

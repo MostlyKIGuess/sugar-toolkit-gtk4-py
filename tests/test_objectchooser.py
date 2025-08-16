@@ -1,39 +1,44 @@
 import unittest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 import sys
 import os
-import io
 import base64
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 try:
     import gi
-    gi.require_version('Gtk', '4.0')
-    from gi.repository import Gtk, Gdk, GdkPixbuf
+
+    gi.require_version("Gtk", "4.0")
+    from gi.repository import Gtk, GdkPixbuf
+
     GTK_AVAILABLE = True
 except (ImportError, ValueError):
     GTK_AVAILABLE = False
 
 from sugar.graphics.objectchooser import (
-    ObjectChooser, get_preview_pixbuf,
-    FILTER_TYPE_GENERIC_MIME, FILTER_TYPE_ACTIVITY, FILTER_TYPE_MIME_BY_ACTIVITY
+    ObjectChooser,
+    get_preview_pixbuf,
+    FILTER_TYPE_GENERIC_MIME,
+    FILTER_TYPE_ACTIVITY,
+    FILTER_TYPE_MIME_BY_ACTIVITY,
 )
 
 # Mock PNG data for testing
 MOCK_PNG_DATA = base64.b64decode(
-    b'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg=='
+    b"iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAIAAADTED8xAAADMElEQVR4nOzVwQnAIBQFQYXff81RUkQCOyDj1YOPnbXWPmeTRef+/3O/OyBjzh3CD95BfqICMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMK0CMO0TAAD//2Anhf4QtqobAAAAAElFTkSuQmCC"
 )
+
 
 class TestGetPreviewPixbuf(unittest.TestCase):
     """Test cases for get_preview_pixbuf function."""
 
     def test_get_preview_pixbuf_empty_data(self):
         """Test with empty preview data."""
-        result = get_preview_pixbuf(b'')
+        result = get_preview_pixbuf(b"")
         self.assertIsNone(result)
 
-        result = get_preview_pixbuf(b'abc')  # Too short
+        result = get_preview_pixbuf(b"abc")  # Too short
         self.assertIsNone(result)
 
     def test_get_preview_pixbuf_valid_png(self):
@@ -55,7 +60,7 @@ class TestGetPreviewPixbuf(unittest.TestCase):
 
     def test_get_preview_pixbuf_invalid_data(self):
         """Test with invalid data."""
-        result = get_preview_pixbuf(b'invalid_png_data_here')
+        result = get_preview_pixbuf(b"invalid_png_data_here")
         self.assertIsNone(result)
 
 
@@ -92,7 +97,7 @@ class TestObjectChooser(unittest.TestCase):
         chooser = ObjectChooser(
             what_filter="image/*",
             filter_type=FILTER_TYPE_GENERIC_MIME,
-            show_preview=True
+            show_preview=True,
         )
         self.assertEqual(chooser._what_filter, "image/*")
         self.assertEqual(chooser._filter_type, FILTER_TYPE_GENERIC_MIME)
@@ -108,15 +113,15 @@ class TestObjectChooser(unittest.TestCase):
         valid_types = [
             FILTER_TYPE_GENERIC_MIME,
             FILTER_TYPE_ACTIVITY,
-            FILTER_TYPE_MIME_BY_ACTIVITY
+            FILTER_TYPE_MIME_BY_ACTIVITY,
         ]
 
         for filter_type in valid_types:
             chooser = ObjectChooser(filter_type=filter_type)
             self.assertEqual(chooser._filter_type, filter_type)
 
-    @patch('dbus.SessionBus')
-    @patch('sugar.datastore.datastore.get')
+    @patch("dbus.SessionBus")
+    @patch("sugar.datastore.datastore.get")
     def test_get_selected_object_none(self, mock_datastore_get, mock_bus):
         """Test get_selected_object when no object is selected."""
         chooser = ObjectChooser()
@@ -124,8 +129,8 @@ class TestObjectChooser(unittest.TestCase):
         self.assertIsNone(result)
         mock_datastore_get.assert_not_called()
 
-    @patch('dbus.SessionBus')
-    @patch('sugar.datastore.datastore.get')
+    @patch("dbus.SessionBus")
+    @patch("sugar.datastore.datastore.get")
     def test_get_selected_object_with_id(self, mock_datastore_get, mock_bus):
         """Test get_selected_object when object is selected."""
         mock_object = Mock()
@@ -162,7 +167,7 @@ class TestObjectChooser(unittest.TestCase):
 
         chooser._cleanup.assert_called_once()
 
-    @patch('dbus.SessionBus')
+    @patch("dbus.SessionBus")
     def test_chooser_response_callback(self, mock_bus):
         """Test chooser response callback."""
         chooser = ObjectChooser()
@@ -180,7 +185,7 @@ class TestObjectChooser(unittest.TestCase):
         chooser._ObjectChooser__chooser_response_cb("different_id", "object_456")
         chooser._cleanup.assert_not_called()
 
-    @patch('dbus.SessionBus')
+    @patch("dbus.SessionBus")
     def test_chooser_cancelled_callback(self, mock_bus):
         """Test chooser cancelled callback."""
         chooser = ObjectChooser()
@@ -197,7 +202,7 @@ class TestObjectChooser(unittest.TestCase):
         chooser._ObjectChooser__chooser_cancelled_cb("different_id")
         chooser._cleanup.assert_not_called()
 
-    @patch('dbus.SessionBus')
+    @patch("dbus.SessionBus")
     def test_name_owner_changed_callback(self, mock_bus):
         """Test name owner changed callback."""
         chooser = ObjectChooser()
@@ -211,8 +216,8 @@ class TestObjectChooser(unittest.TestCase):
 class TestObjectChooserIntegration(unittest.TestCase):
     """Integration tests for ObjectChooser (require mocking D-Bus)."""
 
-    @patch('dbus.SessionBus')
-    @patch('gi.repository.GObject.MainLoop')
+    @patch("dbus.SessionBus")
+    @patch("gi.repository.GObject.MainLoop")
     def test_run_method_success(self, mock_mainloop, mock_bus):
         """Test successful run method."""
         # Setup mocks
@@ -228,7 +233,7 @@ class TestObjectChooserIntegration(unittest.TestCase):
         mock_journal = Mock()
         mock_journal.ChooseObject.return_value = "chooser_123"
 
-        with patch('dbus.Interface', return_value=mock_journal):
+        with patch("dbus.Interface", return_value=mock_journal):
             chooser = ObjectChooser(what_filter="test_filter")
             chooser._cleanup = Mock()  # Prevent actual cleanup
 
@@ -243,8 +248,8 @@ class TestObjectChooserIntegration(unittest.TestCase):
             self.assertEqual(result, Gtk.ResponseType.ACCEPT)
             mock_journal.ChooseObject.assert_called_once()
 
-    @patch('dbus.SessionBus')
-    @patch('gi.repository.GObject.MainLoop')
+    @patch("dbus.SessionBus")
+    @patch("gi.repository.GObject.MainLoop")
     def test_run_method_with_filter(self, mock_mainloop, mock_bus):
         """Test run method with filter type."""
         # Setup mocks
@@ -260,11 +265,11 @@ class TestObjectChooserIntegration(unittest.TestCase):
         mock_journal = Mock()
         mock_journal.ChooseObjectWithFilter.return_value = "chooser_456"
 
-        with patch('dbus.Interface', return_value=mock_journal):
+        with patch("dbus.Interface", return_value=mock_journal):
             chooser = ObjectChooser(
                 what_filter="image/*",
                 filter_type=FILTER_TYPE_GENERIC_MIME,
-                show_preview=True
+                show_preview=True,
             )
             chooser._cleanup = Mock()
 
@@ -281,5 +286,5 @@ class TestObjectChooserIntegration(unittest.TestCase):
             )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

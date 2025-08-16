@@ -4,6 +4,9 @@ import gi
 gi.require_version('Gtk', '4.0')
 from gi.repository import Gtk, GObject
 
+import os
+import sys
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from sugar.graphics.alert import (
     Alert, ConfirmationAlert, ErrorAlert, 
     TimeoutAlert, NotifyAlert, _TimeoutAlert
