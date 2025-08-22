@@ -7,18 +7,18 @@ name = "sugar-toolkit-gtk4"
 version = "0.1.0"
 description = "A GTK4 port of the Sugar Toolkit for Python activities"
 readme = "README.md"
-license = {text = "LGPL-2.1-or-later"}
+license = { text = "LGPL-2.1-or-later" }
 authors = [
-    {name = "Sugar Labs Community", email = "sugar-devel@lists.sugarlabs.org"},
+    { name = "Sugar Labs Community", email = "sugar-devel@lists.sugarlabs.org" },
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers", 
+    "Intended Audience :: Developers",
     "Intended Audience :: Education",
     "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9", 
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -30,18 +30,29 @@ classifiers = [
 requires-python = ">=3.8"
 
 [project.optional-dependencies]
-dev = [
-    "pytest>=6.0",
-    "pytest-cov",
-    "black",
-    "flake8", 
-    "mypy",
-    "build",
-    "twine",
-]
-test = [
-    "pytest>=6.0", 
-    "pytest-cov",
+dev = ["pytest>=6.0", "pytest-cov", "black", "flake8", "mypy", "build", "twine"]
+test = ["pytest>=6.0", "pytest-cov"]
+docs = [
+    "sphinx>=7.1.0",
+    "sphinx-rtd-theme>=1.3.0",
+    "sphinx-autodoc-typehints>=1.24.0",
+    "sphinx-copybutton>=0.5.2",
+    "sphinx-design>=0.5.0",
+    "myst-parser>=2.0.0",
+    "sphinx-autoapi>=2.1.1",
+    "pygments>=2.16.0",
+    "nbsphinx>=0.9.1",
+    "ipython>=8.0.0",
+    "mock>=5.1.0",
+    "recommonmark>=0.7.1",
+    "docutils>=0.18.0",
+    "requests>=2.31.0",
+    "sphinxext-opengraph>=0.9.0",
+    "doc8>=1.1.1",
+    "rstcheck>=6.2.0",
+    "sphinx-tabs>=3.4.0",
+    "sphinx-notfound-page>=1.0.0",
+    "sphinx-last-updated-by-git>=0.3.6",
 ]
 
 [project.urls]
@@ -55,7 +66,7 @@ sugar-test = "sugar.__main__:main"
 [tool.setuptools.package-data]
 sugar = ["*.css", "*.ui", "*.glade", "*.svg", "*.png", "graphics/icons/*.svg"]
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = { "" = "src" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -65,15 +76,8 @@ testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config", 
-    "--verbose",
-]
-markers = [
-    "slow: marks tests as slow",
-    "gtk: marks tests that require GTK4",
-]
+addopts = ["--strict-markers", "--strict-config", "--verbose"]
+markers = ["slow: marks tests as slow", "gtk: marks tests that require GTK4"]
 
 [tool.black]
 line-length = 88
