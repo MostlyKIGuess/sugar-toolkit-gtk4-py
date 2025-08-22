@@ -37,6 +37,10 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
+    "sphinx.ext.githubpages",
+    "sphinx_copybutton",
+    "sphinx_design",
+    "myst_parser",
 ]
 
 # Autodoc configuration
@@ -135,12 +139,13 @@ html_static_path = ["_static"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 html_theme_options = {
-    "canonical_url": "",
+    "canonical_url": "https://sugar-toolkit-gtk4.readthedocs.io/",
     "analytics_id": "",
     "logo_only": False,
+    "display_version": True,
     "prev_next_buttons_location": "bottom",
-    "style_external_links": False,
-    "vcs_pageview_mode": "",
+    "style_external_links": True,
+    "vcs_pageview_mode": "blob",
     "style_nav_header_background": "#2980B9",
     # Toc options
     "collapse_navigation": False,  # Don't collapse by default
@@ -159,6 +164,22 @@ html_static_path = ["_static"]
 html_css_files = [
     "custom.css",
 ]
+
+# HTML title and meta
+html_title = f"{project} v{release}"
+html_short_title = project
+html_show_sourcelink = True
+html_show_sphinx = True
+html_show_copyright = True
+
+html_context = {
+    "display_github": True,
+    "github_user": "mostlykiguess",
+    "github_repo": "sugar-toolkit-gtk4-py",
+    "github_version": "main",
+    "conf_py_path": "/docs/",
+    "source_suffix": ".rst",
+}
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names
@@ -203,3 +224,38 @@ texinfo_documents = [
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
+
+# -- Options for sphinx-copybutton extension --------------------------------
+
+# Configure copy button behavior
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
+copybutton_only_copy_prompt_lines = True
+copybutton_remove_prompts = True
+
+# -- Options for MyST parser extension --------------------------------------
+
+# Enable MyST extensions
+myst_enable_extensions = [
+    "colon_fence",
+    "deflist",
+    "dollarmath",
+    "fieldlist",
+    "html_admonition",
+    "html_image",
+    "linkify",
+    "replacements",
+    "smartquotes",
+    "strikethrough",
+    "substitution",
+    "tasklist",
+]
+
+# MyST configuration
+myst_heading_anchors = 3
+myst_url_schemes = ["http", "https", "mailto"]
+
+# -- Options for sphinx-design extension -----------------------------------
+
+# Enable design extensions for better layouts
+sd_fontawesome_latex = True
