@@ -136,7 +136,7 @@ html_static_path = ["_static"]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 html_theme_options = {
-    "canonical_url": "https://sugar-toolkit-gtk4.readthedocs.io/",
+    "canonical_url": "https://sugar-toolkit-gtk4-py.readthedocs.io/",
     "analytics_id": "",
     "logo_only": False,
     "display_version": True,
