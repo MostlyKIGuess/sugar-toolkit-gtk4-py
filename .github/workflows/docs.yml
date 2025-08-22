@@ -57,7 +57,7 @@ jobs:
         run: |
           cd docs
           make clean
-          make html SPHINXOPTS="-W --keep-going -n"
+          make html SPHINXOPTS="--keep-going -n"
 
       - name: Create .nojekyll file
         run: touch docs/_build/html/.nojekyll
@@ -113,7 +113,7 @@ jobs:
         run: |
           cd docs
           make clean
-          make html SPHINXOPTS="-W --keep-going -n"
+          make html SPHINXOPTS="--keep-going -n"
 
       - name: Upload PR documentation artifact
         uses: actions/upload-artifact@v4

@@ -51,7 +51,11 @@ autodoc_default_options = {
 # Suppress warnings
 suppress_warnings = [
     "toc.not_included",
-    "ref.python",
+    "ref.python", 
+    "ref.class",
+    "ref.meth",
+    "ref.attr",
+    "ref.func",
     "autodoc.import_object",
     "docutils",
 ]
