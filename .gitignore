@@ -9,7 +9,7 @@ __pycache__/
 # flatpak-builder
 
 .flatpak-builder/
-examples/gtk4_bundle_test/repo 
+examples/gtk4_bundle_test/repo
 examples/gtk4_bundle_test/build-dir
 
 # Distribution / packaging
@@ -143,3 +143,4 @@ dmypy.json
 *.xo
 po/
 locale/
+hello-world
