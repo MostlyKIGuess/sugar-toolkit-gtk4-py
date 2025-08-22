@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 project = "Sugar-Toolkit-GTK4"
 copyright = "2025, MostlyK"
 author = "MostlyK"
-release = "0.0.1"
-version = "0.0.1"
+release = "1.1.0"
+version = "1.1.0"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -51,7 +51,7 @@ autodoc_default_options = {
 # Suppress warnings
 suppress_warnings = [
     "toc.not_included",
-    "ref.python", 
+    "ref.python",
     "ref.class",
     "ref.meth",
     "ref.attr",
