@@ -44,7 +44,7 @@ HANDLE_TYPE_CONTACT = TelepathyGLib.HandleType.CONTACT
 
 CONN_INTERFACE_BUDDY_INFO = 'org.laptop.Telepathy.BuddyInfo'
 
-_logger = logging.getLogger('sugar3.presence.buddy')
+_logger = logging.getLogger('sugar.presence.buddy')
 
 
 class BaseBuddy(GObject.GObject):

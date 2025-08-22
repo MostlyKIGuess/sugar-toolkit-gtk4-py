@@ -1492,7 +1492,7 @@ class ToolInvoker(WidgetInvoker):
     (a horizontal toolbar will spawn a palette going downwards).  it also
     draws the highlights specific to a toolitem.
 
-    for :class:`sugar3.graphics.toolbutton.toolbutton` and subclasses, you
+    for :class:`sugar.graphics.toolbutton.toolbutton` and subclasses, you
     should not use the toolinvoker directly.  instead, just subclass the
     tool button and override the `create_palette` function.
 

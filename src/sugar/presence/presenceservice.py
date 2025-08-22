@@ -32,7 +32,7 @@ from sugar.presence.connectionmanager import get_connection_manager
 from gi.repository import GObject
 from gi.repository import TelepathyGLib
 
-_logger = logging.getLogger('sugar3.presence.presenceservice')
+_logger = logging.getLogger('sugar.presence.presenceservice')
 
 ACCOUNT_MANAGER_SERVICE = TelepathyGLib.ACCOUNT_MANAGER_BUS_NAME
 ACCOUNT_MANAGER_PATH = TelepathyGLib.ACCOUNT_MANAGER_OBJECT_PATH

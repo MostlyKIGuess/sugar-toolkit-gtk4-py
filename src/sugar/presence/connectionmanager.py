@@ -16,7 +16,7 @@
 # Boston, MA 02111-1307, USA.
 
 """
-UNSTABLE. It should really be internal to the sugar3.presence package.
+UNSTABLE. It should really be internal to the sugar.presence package.
 """
 
 from functools import partial
@@ -131,4 +131,3 @@ def get_connection_manager():
     if not _connection_manager:
         _connection_manager = ConnectionManager()
     return _connection_manager
-

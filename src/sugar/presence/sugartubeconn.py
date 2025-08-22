@@ -43,7 +43,7 @@ class SugarTubeConnection(TubeConnection):
         """Retrieve a Buddy object given a telepathy handle.
 
         cs_handle: A channel-specific CONTACT type handle.
-        returns: sugar3.presence Buddy object or None
+        returns: sugar.presence Buddy object or None
         """
         pservice = presenceservice.get_instance()
         if self.self_handle == cs_handle:
