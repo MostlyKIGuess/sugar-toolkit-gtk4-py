@@ -31,7 +31,7 @@ import decorator
 import time
 
 from six.moves import reprlib as repr_
-from sugar3 import env
+from sugar import env
 
 # Let's keep this module self contained so that it can be easily
 # pasted in external sugar service like the datastore.
