@@ -1,0 +1,116 @@
+.highlight {
+    background: #f8f8f8;
+    border: 1px solid #e1e4e5;
+    border-radius: 4px;
+    margin: 1em 0;
+}
+
+.highlight pre {
+    padding: 12px;
+    overflow-x: auto;
+    line-height: 1.4;
+}
+
+/* Better table styling */
+.rst-content table.docutils {
+    border: 1px solid #e1e4e5;
+    border-collapse: collapse;
+}
+
+.rst-content table.docutils th,
+.rst-content table.docutils td {
+    border: 1px solid #e1e4e5;
+    padding: 8px 12px;
+}
+
+.rst-content table.docutils th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Improve API documentation styling */
+.rst-content dl.class,
+.rst-content dl.function,
+.rst-content dl.method {
+    margin-bottom: 24px;
+}
+
+.rst-content dl.class > dt,
+.rst-content dl.function > dt,
+.rst-content dl.method > dt {
+    background-color: #f8f9fa;
+    border-left: 4px solid #2980b9;
+    padding: 8px 12px;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", monospace;
+    font-size: 14px;
+}
+
+/* Better parameter list styling */
+.rst-content .field-list {
+    margin: 16px 0;
+}
+
+.rst-content .field-list .field-name {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 3px;
+}
+
+/* Improve admonition styling */
+.rst-content .admonition {
+    margin: 20px 0;
+    padding: 12px;
+    border-left: 4px solid #2980b9;
+    background-color: #f8f9fa;
+}
+
+.rst-content .admonition .admonition-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+/* Better navigation styling */
+.wy-nav-content {
+    max-width: none;
+}
+
+.wy-nav-content-wrap {
+    margin-left: 300px;
+}
+
+@media screen and (max-width: 768px) {
+    .wy-nav-content-wrap {
+        margin-left: 0;
+    }
+}
+
+/* Improve source code links */
+.viewcode-link {
+    float: right;
+    font-size: 12px;
+    color: #2980b9;
+    text-decoration: none;
+}
+
+.viewcode-link:hover {
+    text-decoration: underline;
+}
+
+/* Better module index styling */
+.rst-content .modindex-jumpbox {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.rst-content .modindex-jumpbox a {
+    margin: 0 4px;
+    padding: 4px 8px;
+    background-color: #f8f9fa;
+    border-radius: 3px;
+    text-decoration: none;
+}
+
+.rst-content .modindex-jumpbox a:hover {
+    background-color: #e9ecef;
+}
