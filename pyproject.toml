@@ -32,7 +32,7 @@ requires-python = ">=3.8"
 [project.optional-dependencies]
 dev = ["pytest>=6.0", "pytest-cov", "black", "flake8", "mypy", "build", "twine"]
 test = ["pytest>=6.0", "pytest-cov"]
-docs = ["sphinx", "sphinx-rtd-theme", "sphinx-copybutton", "mock"]
+docs = ["sphinx", "sphinx-rtd-theme", "six", "decorator"]
 
 [project.urls]
 Homepage = "https://github.com/mostlykiguess/sugar-toolkit-gtk4-py"

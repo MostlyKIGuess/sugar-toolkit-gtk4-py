@@ -37,10 +37,6 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.doctest",
     "sphinx.ext.todo",
-    "sphinx.ext.githubpages",
-    "sphinx_copybutton",
-    "sphinx_design",
-    "myst_parser",
 ]
 
 # Autodoc configuration
