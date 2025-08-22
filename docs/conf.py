@@ -84,6 +84,7 @@ autodoc_mock_imports = [
     "SimpleHTTPServer",
     "socketserver",
     "sugar3",
+    "cairo",
 ]
 
 # Napoleon settings for Google/NumPy style docstrings
