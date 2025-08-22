@@ -144,3 +144,5 @@ dmypy.json
 po/
 locale/
 hello-world
+
+*.flatpak
