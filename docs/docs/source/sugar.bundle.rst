@@ -12,6 +12,30 @@ sugar.bundle.activitybundle module
    :show-inheritance:
    :undoc-members:
 
+sugar.bundle.bundle module
+--------------------------
+
+.. automodule:: sugar.bundle.bundle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+sugar.bundle.bundleversion module
+---------------------------------
+
+.. automodule:: sugar.bundle.bundleversion
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+sugar.bundle.contentbundle module
+---------------------------------
+
+.. automodule:: sugar.bundle.contentbundle
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 sugar.bundle.helpers module
 ---------------------------
 
@@ -26,4 +50,4 @@ Module contents
 .. automodule:: sugar.bundle
    :members:
    :show-inheritance:
-   :undoc-members:
+   :undoc-
