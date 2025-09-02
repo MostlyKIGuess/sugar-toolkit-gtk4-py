@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sugar-toolkit-gtk4"
-version = "1.1.0"
+version = "1.1.1"
 description = "A GTK4 port of the Sugar Toolkit for Python activities"
 readme = "README.md"
 license = { text = "LGPL-2.1-or-later" }

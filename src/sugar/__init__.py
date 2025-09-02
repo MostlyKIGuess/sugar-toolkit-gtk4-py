@@ -29,7 +29,7 @@ except ImportError:
     # gi might not be available during docs build
     pass
 
-__version__ = "1.1.0"
+__version__ = "1.1.1"
 __author__ = "Sugar Labs Community"
 __license__ = "LGPL-2.1-or-later"
 
