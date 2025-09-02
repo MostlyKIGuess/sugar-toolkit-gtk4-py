@@ -178,6 +178,7 @@ from gi.repository import GLib, GObject, Gdk, Gtk, Gio
 
 try:
     import cairo
+
     HAS_CAIRO = True
 except ImportError:
     HAS_CAIRO = False
@@ -192,23 +193,26 @@ from sugar.graphics.icon import Icon
 from sugar.bundle.activitybundle import get_bundle_instance
 from sugar.datastore import datastore
 from sugar import env
+import dbus
+from sugar.bundle.activitybundle import get_bundle_instance
+from sugar.bundle.helpers import bundle_from_dir
 
 
 def _(msg):
-    return gettext.dgettext('sugar-toolkit-gtk4', msg)
+    return gettext.dgettext("sugar-toolkit-gtk4", msg)
 
 
-SCOPE_PRIVATE = 'private'
-SCOPE_INVITE_ONLY = 'invite'  # shouldn't be shown in UI, it's implicit
-SCOPE_NEIGHBORHOOD = 'public'
+SCOPE_PRIVATE = "private"
+SCOPE_INVITE_ONLY = "invite"  # shouldn't be shown in UI, it's implicit
+SCOPE_NEIGHBORHOOD = "public"
 
-J_DBUS_SERVICE = 'org.laptop.Journal'
-J_DBUS_PATH = '/org/laptop/Journal'
-J_DBUS_INTERFACE = 'org.laptop.Journal'
+J_DBUS_SERVICE = "org.laptop.Journal"
+J_DBUS_PATH = "/org/laptop/Journal"
+J_DBUS_INTERFACE = "org.laptop.Journal"
 
-N_BUS_NAME = 'org.freedesktop.Notifications'
-N_OBJ_PATH = '/org/freedesktop/Notifications'
-N_IFACE_NAME = 'org.freedesktop.Notifications'
+N_BUS_NAME = "org.freedesktop.Notifications"
+N_OBJ_PATH = "/org/freedesktop/Notifications"
+N_IFACE_NAME = "org.freedesktop.Notifications"
 
 PREVIEW_SIZE = style.zoom(300), style.zoom(225)
 """
@@ -224,8 +228,8 @@ class _ActivitySession(GObject.GObject):
     """
 
     __gsignals__ = {
-        'quit-requested': (GObject.SignalFlags.RUN_FIRST, None, ()),
-        'quit': (GObject.SignalFlags.RUN_FIRST, None, ()),
+        "quit-requested": (GObject.SignalFlags.RUN_FIRST, None, ()),
+        "quit": (GObject.SignalFlags.RUN_FIRST, None, ()),
     }
 
     def __init__(self):
@@ -242,7 +246,7 @@ class _ActivitySession(GObject.GObject):
             self._activities.remove(activity)
 
         if len(self._activities) == 0:
-            logging.debug('Quitting the activity process.')
+            logging.debug("Quitting the activity process.")
             # In GTK4, we need to quit the application properly
             if self._main_loop and self._main_loop.is_running():
                 self._main_loop.quit()
@@ -259,7 +263,7 @@ class _ActivitySession(GObject.GObject):
                 if act not in self._will_quit:
                     return
 
-            self.emit('quit')
+            self.emit("quit")
         else:
             self._will_quit = []
 
@@ -306,14 +310,14 @@ class Activity(Window):
     :class:`Activity` specific code.
     """
 
-    __gtype_name__ = 'SugarActivity'
+    __gtype_name__ = "SugarActivity"
 
     __gsignals__ = {
-        'shared': (GObject.SignalFlags.RUN_FIRST, None, ()),
-        'joined': (GObject.SignalFlags.RUN_FIRST, None, ()),
+        "shared": (GObject.SignalFlags.RUN_FIRST, None, ()),
+        "joined": (GObject.SignalFlags.RUN_FIRST, None, ()),
         # For internal use only, use can_close() if you want to perform extra
         # checks before actually closing
-        'closing': (GObject.SignalFlags.RUN_FIRST, None, ()),
+        "closing": (GObject.SignalFlags.RUN_FIRST, None, ()),
     }
 
     def __init__(self, handle, create_jobject=True, application=None):
@@ -341,37 +345,37 @@ class Activity(Window):
         self._bus = None
 
         # Set up signal handling early
-        if hasattr(GLib, 'unix_signal_add'):
-            GLib.unix_signal_add(
-                GLib.PRIORITY_DEFAULT, signal.SIGINT, self.close)
+        if hasattr(GLib, "unix_signal_add"):
+            GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, signal.SIGINT, self.close)
 
         # Stuff that needs to be done early
-        icons_path = os.path.join(get_bundle_path(), 'icons')
+        icons_path = os.path.join(get_bundle_path(), "icons")
         icon_theme = Gtk.IconTheme.get_for_display(Gdk.Display.get_default())
         icon_theme.add_search_path(icons_path)
 
-        sugar_theme = 'sugar-72'
-        if 'SUGAR_SCALING' in os.environ:
-            if os.environ['SUGAR_SCALING'] == '100':
-                sugar_theme = 'sugar-100'
+        sugar_theme = "sugar-72"
+        if "SUGAR_SCALING" in os.environ:
+            if os.environ["SUGAR_SCALING"] == "100":
+                sugar_theme = "sugar-100"
 
         # styling and theming
         display = Gdk.Display.get_default()
         if display:
             settings = Gtk.Settings.get_for_display(display)
-            settings.set_property('gtk-theme-name', sugar_theme)
-            settings.set_property('gtk-icon-theme-name', 'sugar')
-            settings.set_property('gtk-font-name',
-                                  '%s %f' % (style.FONT_FACE, style.FONT_SIZE))
+            settings.set_property("gtk-theme-name", sugar_theme)
+            settings.set_property("gtk-icon-theme-name", "sugar")
+            settings.set_property(
+                "gtk-font-name", "%s %f" % (style.FONT_FACE, style.FONT_SIZE)
+            )
 
         # Initialize parent Window
         Window.__init__(self, application=application)
 
-        if 'SUGAR_ACTIVITY_ROOT' in os.environ:
+        if "SUGAR_ACTIVITY_ROOT" in os.environ:
             # If this activity runs inside Sugar, we want it to take all the
             # screen. In GTK4, we use different approach for fullscreen
-            self.connect('notify::default-width', self.__window_size_changed_cb)
-            self.connect('notify::default-height', self.__window_size_changed_cb)
+            self.connect("notify::default-width", self.__window_size_changed_cb)
+            self.connect("notify::default-height", self.__window_size_changed_cb)
             self._adapt_window_to_screen()
 
         # Process titles will only show 15 characters
@@ -379,16 +383,15 @@ class Activity(Window):
         # are supported in the future we will get a better view
         # of the processes
         if handle:
-            proc_title = '%s <%s>' % (get_bundle_name(), handle.activity_id)
+            proc_title = "%s <%s>" % (get_bundle_name(), handle.activity_id)
             util.set_proc_title(proc_title)
 
-        self.connect('close-request', self.__close_request_cb)
+        self.connect("close-request", self.__close_request_cb)
 
         self._session = _get_session()
         self._session.register(self)
-        self._session.connect('quit-requested',
-                              self.__session_quit_requested_cb)
-        self._session.connect('quit', self.__session_quit_cb)
+        self._session.connect("quit-requested", self.__session_quit_requested_cb)
+        self._session.connect("quit", self.__session_quit_cb)
 
         # GTK4: Accelerator groups are handled differently
         # We'll use application accelerators instead
@@ -398,39 +401,38 @@ class Activity(Window):
 
         share_scope = SCOPE_PRIVATE
 
-
         if handle and handle.object_id:
             self._is_resumed = True
             try:
                 self._jobject = datastore.get(handle.object_id)
 
-                if 'share-scope' in self._jobject.metadata:
-                    share_scope = self._jobject.metadata['share-scope']
+                if "share-scope" in self._jobject.metadata:
+                    share_scope = self._jobject.metadata["share-scope"]
 
-                if 'launch-times' in self._jobject.metadata:
-                    self._jobject.metadata['launch-times'] += ', %d' % \
-                        int(time.time())
+                if "launch-times" in self._jobject.metadata:
+                    self._jobject.metadata["launch-times"] += ", %d" % int(time.time())
                 else:
-                    self._jobject.metadata['launch-times'] = \
-                        str(int(time.time()))
+                    self._jobject.metadata["launch-times"] = str(int(time.time()))
 
-                if 'spent-times' in self._jobject.metadata:
-                    self._jobject.metadata['spent-times'] += ', 0'
+                if "spent-times" in self._jobject.metadata:
+                    self._jobject.metadata["spent-times"] += ", 0"
                 else:
-                    self._jobject.metadata['spent-times'] = '0'
+                    self._jobject.metadata["spent-times"] = "0"
 
             except Exception as e:
-                logging.warning("Could not load journal object %s: %s", handle.object_id, e)
+                logging.warning(
+                    "Could not load journal object %s: %s", handle.object_id, e
+                )
                 logging.info("Creating new journal object in standalone mode")
                 self._is_resumed = False
                 self._jobject = self._initialize_journal_object()
         else:
             self._is_resumed = False
             self._jobject = self._initialize_journal_object()
-            if hasattr(self._jobject, 'metadata') and self._jobject.metadata:
-                self.set_title(self._jobject.metadata['title'])
+            if hasattr(self._jobject, "metadata") and self._jobject.metadata:
+                self.set_title(self._jobject.metadata["title"])
 
-        self._original_title = self._jobject.metadata['title']
+        self._original_title = self._jobject.metadata["title"]
 
         # Sharing setup
         # TODO
@@ -443,13 +445,11 @@ class Activity(Window):
             self._set_up_sharing(None, share_scope)
 
         if self.shared_activity is not None:
-            self._jobject.metadata['title'] = self.shared_activity.props.name
-            self._jobject.metadata['icon-color'] = \
-                self.shared_activity.props.color
+            self._jobject.metadata["title"] = self.shared_activity.props.name
+            self._jobject.metadata["icon-color"] = self.shared_activity.props.color
         else:
-            self._jobject.metadata.connect('updated',
-                                           self.__jobject_updated_cb)
-        self.set_title(self._jobject.metadata['title'])
+            self._jobject.metadata.connect("updated", self.__jobject_updated_cb)
+        self.set_title(self._jobject.metadata["title"])
 
         bundle = get_bundle_instance(get_bundle_path())
         if bundle and bundle.get_icon():
@@ -458,11 +458,10 @@ class Activity(Window):
         if self._is_resumed and get_save_as():
             # preserve original and use a copy for editing
             self._jobject_old = self._jobject
-            self._jobject = datastore.copy(self._jobject, '/')
+            self._jobject = datastore.copy(self._jobject, "/")
 
         # Set the original title again after any operations
-        self._original_title = self._jobject.metadata['title']
-
+        self._original_title = self._jobject.metadata["title"]
 
     def add_stop_button(self, button):
         """
@@ -499,22 +498,22 @@ class Activity(Window):
 
     def _initialize_journal_object(self):
         """Initialize a new journal object for the activity."""
-        title = _('%s Activity') % get_bundle_name()
+        title = _("%s Activity") % get_bundle_name()
         icon_color = get_color().to_string()
 
         try:
             jobject = datastore.create()
-            jobject.metadata['title'] = title
-            jobject.metadata['title_set_by_user'] = '0'
-            jobject.metadata['activity'] = self.get_bundle_id()
-            jobject.metadata['activity_id'] = self.get_id()
-            jobject.metadata['keep'] = '0'
-            jobject.metadata['preview'] = ''
-            jobject.metadata['share-scope'] = SCOPE_PRIVATE
-            jobject.metadata['icon-color'] = icon_color
-            jobject.metadata['launch-times'] = str(int(time.time()))
-            jobject.metadata['spent-times'] = '0'
-            jobject.file_path = ''
+            jobject.metadata["title"] = title
+            jobject.metadata["title_set_by_user"] = "0"
+            jobject.metadata["activity"] = self.get_bundle_id()
+            jobject.metadata["activity_id"] = self.get_id()
+            jobject.metadata["keep"] = "0"
+            jobject.metadata["preview"] = ""
+            jobject.metadata["share-scope"] = SCOPE_PRIVATE
+            jobject.metadata["icon-color"] = icon_color
+            jobject.metadata["launch-times"] = str(int(time.time()))
+            jobject.metadata["spent-times"] = "0"
+            jobject.file_path = ""
 
             # Try to write to datastore
             # NOTE: Bug on GTK3 Toolkit:
@@ -527,17 +526,22 @@ class Activity(Window):
 
         except Exception as e:
             # This is to test Activity seperately in env without Sugar.
-            logging.warning("Datastore not available (not running in Sugar environment): %s", e)
-            logging.info("Activity will run in standalone mode without journal integration")
+            logging.warning(
+                "Datastore not available (not running in Sugar environment): %s", e
+            )
+            logging.info(
+                "Activity will run in standalone mode without journal integration"
+            )
 
             # Create a minimal mock journal object for standalone operation
             from sugar.datastore.datastore import DSMetadata
 
             class MockJobject:
                 """Mock journal object that doesn't require datastore"""
+
                 def __init__(self):
                     self.object_id = None  # No real journal object
-                    self.file_path = ''
+                    self.file_path = ""
                     self._metadata = DSMetadata()
                     self._destroyed = False
 
@@ -549,24 +553,24 @@ class Activity(Window):
                     self._destroyed = True
 
             jobject = MockJobject()
-            jobject.metadata['title'] = title
-            jobject.metadata['title_set_by_user'] = '0'
-            jobject.metadata['activity'] = self.get_bundle_id()
-            jobject.metadata['activity_id'] = self.get_id()
-            jobject.metadata['keep'] = '0'
-            jobject.metadata['preview'] = ''
-            jobject.metadata['share-scope'] = SCOPE_PRIVATE
-            jobject.metadata['icon-color'] = icon_color
-            jobject.metadata['launch-times'] = str(int(time.time()))
-            jobject.metadata['spent-times'] = '0'
+            jobject.metadata["title"] = title
+            jobject.metadata["title_set_by_user"] = "0"
+            jobject.metadata["activity"] = self.get_bundle_id()
+            jobject.metadata["activity_id"] = self.get_id()
+            jobject.metadata["keep"] = "0"
+            jobject.metadata["preview"] = ""
+            jobject.metadata["share-scope"] = SCOPE_PRIVATE
+            jobject.metadata["icon-color"] = icon_color
+            jobject.metadata["launch-times"] = str(int(time.time()))
+            jobject.metadata["spent-times"] = "0"
 
             return jobject
 
     def __jobject_updated_cb(self, jobject):
         """Handle journal object updates."""
-        if self.get_title() == jobject['title']:
+        if self.get_title() == jobject["title"]:
             return
-        self.set_title(jobject['title'])
+        self.set_title(jobject["title"])
 
     def _set_up_sharing(self, mesh_instance, share_scope):
         """
@@ -576,8 +580,10 @@ class Activity(Window):
         will use modern collaboration APIs.
         """
         # handle activity share/join
-        logging.debug('*** Act %s, mesh instance %r, scope %s' %
-                      (self._activity_id, mesh_instance, share_scope))
+        logging.debug(
+            "*** Act %s, mesh instance %r, scope %s"
+            % (self._activity_id, mesh_instance, share_scope)
+        )
 
         # For now, sharing is not implemented in GTK4 port
         if mesh_instance is not None:
@@ -624,7 +630,8 @@ class Activity(Window):
                 self.save()
 
     active = GObject.Property(
-        type=bool, default=False, getter=get_active, setter=set_active)
+        type=bool, default=False, getter=get_active, setter=set_active
+    )
     """
         Whether an activity is active.
     """
@@ -663,8 +670,8 @@ class Activity(Window):
         self._max_participants = participants
 
     max_participants = GObject.Property(
-        type=int, default=0, getter=get_max_participants,
-        setter=set_max_participants)
+        type=int, default=0, getter=get_max_participants, setter=set_max_participants
+    )
 
     def get_id(self):
         """
@@ -687,7 +694,7 @@ class Activity(Window):
         Returns:
             str: the bundle_id from the activity.info file
         """
-        return os.environ['SUGAR_BUNDLE_ID']
+        return os.environ["SUGAR_BUNDLE_ID"]
 
     def get_canvas(self):
         """
@@ -707,7 +714,7 @@ class Activity(Window):
         """
         Window.set_canvas(self, canvas)
         if not self._read_file_called and canvas:
-            canvas.connect('map', self.__canvas_map_cb)
+            canvas.connect("map", self.__canvas_map_cb)
 
     canvas = property(get_canvas, set_canvas)
     """
@@ -745,9 +752,8 @@ class Activity(Window):
 
     def __canvas_map_cb(self, canvas):
         """Handle canvas map signal."""
-        logging.debug('Activity.__canvas_map_cb')
-        if self._jobject and self._jobject.file_path and \
-                not self._read_file_called:
+        logging.debug("Activity.__canvas_map_cb")
+        if self._jobject and self._jobject.file_path and not self._read_file_called:
             self.read_file(self._jobject.file_path)
             self._read_file_called = True
         canvas.disconnect_by_func(self.__canvas_map_cb)
@@ -758,7 +764,7 @@ class Activity(Window):
 
     def __jobject_error_cb(self, err):
         """Handle journal object errors."""
-        logging.debug('Error creating activity datastore object: %s' % err)
+        logging.debug("Error creating activity datastore object: %s" % err)
 
     def get_activity_root(self):
         """
@@ -840,7 +846,7 @@ class Activity(Window):
 
     def __save_cb(self):
         """Handle successful save."""
-        logging.debug('Activity.__save_cb')
+        logging.debug("Activity.__save_cb")
         self._updating_jobject = False
         if self._quit_requested:
             self._session.will_quit(self, True)
@@ -849,22 +855,20 @@ class Activity(Window):
 
     def __save_error_cb(self, err):
         """Handle save error."""
-        logging.debug('Activity.__save_error_cb')
+        logging.debug("Activity.__save_error_cb")
         self._updating_jobject = False
         if self._quit_requested:
             self._session.will_quit(self, False)
         if self._closing:
             self._show_keep_failed_dialog()
             self._closing = False
-        raise RuntimeError('Error saving activity object to datastore: %s' %
-                           err)
+        raise RuntimeError("Error saving activity object to datastore: %s" % err)
 
     def _cleanup_jobject(self):
         """Clean up journal object."""
         if self._jobject:
             if self._owns_file and os.path.isfile(self._jobject.file_path):
-                logging.debug('_cleanup_jobject: removing %r' %
-                              self._jobject.file_path)
+                logging.debug("_cleanup_jobject: removing %r" % self._jobject.file_path)
                 os.remove(self._jobject.file_path)
             self._owns_file = False
             self._jobject.destroy()
@@ -905,14 +909,18 @@ class Activity(Window):
             # First, try to find a drawable widget (like DrawingArea)
             drawing_widget = self._find_drawable_widget(self.canvas)
 
-            if drawing_widget and hasattr(drawing_widget, 'snapshot'):
+            if drawing_widget and hasattr(drawing_widget, "snapshot"):
                 # Use the drawable widget for preview
                 widget_allocation = drawing_widget.get_allocation()
-                canvas_width, canvas_height = widget_allocation.width, widget_allocation.height
+                canvas_width, canvas_height = (
+                    widget_allocation.width,
+                    widget_allocation.height,
+                )
 
                 # Create Cairo surface for the widget
-                screenshot_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                       canvas_width, canvas_height)
+                screenshot_surface = cairo.ImageSurface(
+                    cairo.FORMAT_ARGB32, canvas_width, canvas_height
+                )
                 cr = cairo.Context(screenshot_surface)
 
                 cr.set_source_rgb(1, 1, 1)  # White background
@@ -921,7 +929,9 @@ class Activity(Window):
                 # Try to render the widget
                 try:
                     snapshot = Gtk.Snapshot()
-                    drawing_widget.snapshot(snapshot, widget_allocation.width, widget_allocation.height)
+                    drawing_widget.snapshot(
+                        snapshot, widget_allocation.width, widget_allocation.height
+                    )
 
                     # Convert snapshot to cairo surface
                     # For now, we'll create a basic preview
@@ -931,7 +941,9 @@ class Activity(Window):
 
                     # Add some indication this is a preview
                     cr.set_source_rgb(0.5, 0.5, 0.5)
-                    cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                    cr.select_font_face(
+                        "Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL
+                    )
                     cr.set_font_size(14)
                     cr.move_to(20, 30)
                     cr.show_text("Activity Preview")
@@ -941,7 +953,9 @@ class Activity(Window):
                     cr.set_source_rgb(0.9, 0.9, 0.9)
                     cr.paint()
                     cr.set_source_rgb(0.3, 0.3, 0.3)
-                    cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+                    cr.select_font_face(
+                        "Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD
+                    )
                     cr.set_font_size(16)
                     cr.move_to(canvas_width // 4, canvas_height // 2)
                     cr.show_text("Activity Preview")
@@ -949,8 +963,9 @@ class Activity(Window):
             else:
                 # Fallback: create a generic preview
                 canvas_width, canvas_height = 400, 300
-                screenshot_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                       canvas_width, canvas_height)
+                screenshot_surface = cairo.ImageSurface(
+                    cairo.FORMAT_ARGB32, canvas_width, canvas_height
+                )
                 cr = cairo.Context(screenshot_surface)
 
                 cr.set_source_rgb(0.95, 0.95, 0.95)
@@ -962,7 +977,9 @@ class Activity(Window):
                 cr.stroke()
 
                 cr.set_source_rgb(0.3, 0.3, 0.3)
-                cr.select_font_face("Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD)
+                cr.select_font_face(
+                    "Sans", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_BOLD
+                )
                 cr.set_font_size(18)
 
                 text = f"{self.get_title()} Preview"
@@ -974,8 +991,9 @@ class Activity(Window):
                 cr.show_text(text)
 
             preview_width, preview_height = PREVIEW_SIZE
-            preview_surface = cairo.ImageSurface(cairo.FORMAT_ARGB32,
-                                                 preview_width, preview_height)
+            preview_surface = cairo.ImageSurface(
+                cairo.FORMAT_ARGB32, preview_width, preview_height
+            )
             preview_cr = cairo.Context(preview_surface)
 
             scale_w = preview_width * 1.0 / canvas_width
@@ -1008,7 +1026,7 @@ class Activity(Window):
             return widget
 
         # If it's a container, search children
-        if hasattr(widget, 'get_first_child'):
+        if hasattr(widget, "get_first_child"):
             child = widget.get_first_child()
             while child:
                 drawable = self._find_drawable_widget(child)
@@ -1024,7 +1042,7 @@ class Activity(Window):
             buddies = {}
             for buddy in self.shared_activity.get_joined_buddies():
                 if not buddy.props.owner:
-                    buddy_id = sha1((buddy.props.key).encode('utf-8')).hexdigest()
+                    buddy_id = sha1((buddy.props.key).encode("utf-8")).hexdigest()
                     buddies[buddy_id] = [buddy.props.nick, buddy.props.color]
             return buddies
         else:
@@ -1041,67 +1059,71 @@ class Activity(Window):
         own implementation of write_file() to save your activity specific data.
         """
         if self._jobject is None:
-            logging.debug('Cannot save, no journal object.')
+            logging.debug("Cannot save, no journal object.")
             return
 
-        logging.debug('Activity.save: %r' % getattr(self._jobject, 'object_id', 'mock'))
+        logging.debug("Activity.save: %r" % getattr(self._jobject, "object_id", "mock"))
 
         if self._updating_jobject:
-            logging.info('Activity.save: still processing a previous request.')
+            logging.info("Activity.save: still processing a previous request.")
             return
 
         buddies_dict = self._get_buddies()
         if buddies_dict:
-            self.metadata['buddies_id'] = json.dumps(list(buddies_dict.keys()))
-            self.metadata['buddies'] = json.dumps(self._get_buddies())
+            self.metadata["buddies_id"] = json.dumps(list(buddies_dict.keys()))
+            self.metadata["buddies"] = json.dumps(self._get_buddies())
 
         # update spent time before saving
         self._update_spent_time()
 
         def set_last_value(values_list, new_value):
-            if ', ' not in values_list:
-                return '%d' % new_value
+            if ", " not in values_list:
+                return "%d" % new_value
             else:
-                partial_list = ', '.join(values_list.split(', ')[:-1])
-                return partial_list + ', %d' % new_value
+                partial_list = ", ".join(values_list.split(", ")[:-1])
+                return partial_list + ", %d" % new_value
 
-        self.metadata['spent-times'] = set_last_value(
-            self.metadata['spent-times'], self._spent_time)
+        self.metadata["spent-times"] = set_last_value(
+            self.metadata["spent-times"], self._spent_time
+        )
 
         preview = self.get_preview()
         if preview is not None:
             # In GTK4, we handle binary data differently
-            self.metadata['preview'] = preview
+            self.metadata["preview"] = preview
 
-        if not self.metadata.get('activity_id', ''):
-            self.metadata['activity_id'] = self.get_id()
+        if not self.metadata.get("activity_id", ""):
+            self.metadata["activity_id"] = self.get_id()
 
-        file_path = os.path.join(get_activity_root(), 'instance',
-                                 '%i' % time.time())
+        file_path = os.path.join(get_activity_root(), "instance", "%i" % time.time())
         try:
             self.write_file(file_path)
         except NotImplementedError:
-            logging.debug('Activity.write_file is not implemented.')
+            logging.debug("Activity.write_file is not implemented.")
         else:
             if os.path.exists(file_path):
                 self._owns_file = True
                 self._jobject.file_path = file_path
 
         # Check if we have a real datastore object or a mock
-        if hasattr(self._jobject, 'object_id') and self._jobject.object_id is not None:
+        if hasattr(self._jobject, "object_id") and self._jobject.object_id is not None:
             # Real journal object - try to write to datastore
             try:
                 if self._jobject.object_id is None:
                     datastore.write(self._jobject, transfer_ownership=True)
                 else:
                     self._updating_jobject = True
-                    datastore.write(self._jobject,
-                                  transfer_ownership=True,
-                                  reply_handler=self.__save_cb,
-                                  error_handler=self.__save_error_cb)
+                    datastore.write(
+                        self._jobject,
+                        transfer_ownership=True,
+                        reply_handler=self.__save_cb,
+                        error_handler=self.__save_error_cb,
+                    )
             except Exception as e:
                 logging.warning("Failed to save to datastore: %s", e)
-                logging.info("Running in standalone mode - file saved to: %s", file_path)
+                logging.info(
+                    "Running in standalone mode - file saved to: %s", file_path
+                )
                 self._updating_jobject = False
         else:
             # Mock journal object - just log that we saved the file
@@ -1119,26 +1141,25 @@ class Activity(Window):
         :meth:`save` do any copy work that needs to be done in
         :meth:`write_file`.
         """
-        logging.debug('Activity.copy: %r' % self._jobject.object_id)
+        logging.debug("Activity.copy: %r" % self._jobject.object_id)
         self.save()
         self._jobject.object_id = None
 
     def __privacy_changed_cb(self, shared_activity, param_spec):
         """Handle privacy changes in shared activity."""
-        logging.debug('__privacy_changed_cb %r' %
-                      shared_activity.props.private)
+        logging.debug("__privacy_changed_cb %r" % shared_activity.props.private)
         if shared_activity.props.private:
-            self._jobject.metadata['share-scope'] = SCOPE_INVITE_ONLY
+            self._jobject.metadata["share-scope"] = SCOPE_INVITE_ONLY
         else:
-            self._jobject.metadata['share-scope'] = SCOPE_NEIGHBORHOOD
+            self._jobject.metadata["share-scope"] = SCOPE_NEIGHBORHOOD
 
     def __joined_cb(self, activity, success, err):
         """Callback when join has finished"""
-        logging.debug('Activity.__joined_cb %r' % success)
+        logging.debug("Activity.__joined_cb %r" % success)
         self.shared_activity.disconnect(self._join_id)
         self._join_id = None
         if not success:
-            logging.debug('Failed to join activity: %s' % err)
+            logging.debug("Failed to join activity: %s" % err)
             return
 
         # Power management for GTK4
@@ -1147,7 +1168,7 @@ class Activity(Window):
         #     power_manager.inhibit_suspend()
 
         self.present()
-        self.emit('joined')
+        self.emit("joined")
         self.__privacy_changed_cb(self.shared_activity, None)
 
     def get_shared_activity(self):
@@ -1176,14 +1197,15 @@ class Activity(Window):
     def __share_cb(self, ps, success, activity, err):
         """Handle sharing callback."""
         if not success:
-            logging.debug('Share of activity %s failed: %s.' %
-                          (self._activity_id, err))
+            logging.debug("Share of activity %s failed: %s." % (self._activity_id, err))
             return
 
-        logging.debug('Share of activity %s successful, PS activity is %r.' %
-                      (self._activity_id, activity))
+        logging.debug(
+            "Share of activity %s successful, PS activity is %r."
+            % (self._activity_id, activity)
+        )
 
-        activity.props.name = self._jobject.metadata['title']
+        activity.props.name = self._jobject.metadata["title"]
 
         # Power management for GTK4
         # power_manager = power.get_power_manager()
@@ -1191,9 +1213,8 @@ class Activity(Window):
         #     power_manager.inhibit_suspend()
 
         self.shared_activity = activity
-        self.shared_activity.connect('notify::private',
-                                     self.__privacy_changed_cb)
-        self.emit('shared')
+        self.shared_activity.connect("notify::private", self.__privacy_changed_cb)
+        self.emit("shared")
         self.__privacy_changed_cb(self.shared_activity, None)
 
         self._send_invites()
@@ -1201,7 +1222,7 @@ class Activity(Window):
     def _invite_response_cb(self, error):
         """Handle invite response."""
         if error:
-            logging.error('Invite failed: %s', error)
+            logging.error("Invite failed: %s", error)
 
     def _send_invites(self):
         """Send pending invites."""
@@ -1224,8 +1245,7 @@ class Activity(Window):
         """
         self._invites_queue.append((account_path, contact_id))
 
-        if (self.shared_activity is None or
-                not self.shared_activity.props.joined):
+        if self.shared_activity is None or not self.shared_activity.props.joined:
             self.share(True)
         else:
             self._send_invites()
@@ -1254,18 +1274,17 @@ class Activity(Window):
         written to.
         """
         alert = Alert()
-        alert.props.title = _('Keep error')
-        alert.props.msg = _('Keep error: all changes will be lost')
+        alert.props.title = _("Keep error")
+        alert.props.msg = _("Keep error: all changes will be lost")
 
-        cancel_icon = Icon(icon_name='dialog-cancel')
-        alert.add_button(Gtk.ResponseType.CANCEL, _('Don\'t stop'),
-                         cancel_icon)
+        cancel_icon = Icon(icon_name="dialog-cancel")
+        alert.add_button(Gtk.ResponseType.CANCEL, _("Don't stop"), cancel_icon)
 
-        stop_icon = Icon(icon_name='dialog-ok')
-        alert.add_button(Gtk.ResponseType.OK, _('Stop anyway'), stop_icon)
+        stop_icon = Icon(icon_name="dialog-ok")
+        alert.add_button(Gtk.ResponseType.OK, _("Stop anyway"), stop_icon)
 
         self.add_alert(alert)
-        alert.connect('response', self.__keep_failed_dialog_response_cb)
+        alert.connect("response", self.__keep_failed_dialog_response_cb)
 
         self.present()
 
@@ -1297,49 +1316,55 @@ class Activity(Window):
         for button in self._stop_buttons:
             button.set_sensitive(False)
         alert = Alert()
-        alert.props.title = _('Stop')
-        alert.props.msg = _('Stop: name your journal entry')
+        alert.props.title = _("Stop")
+        alert.props.msg = _("Stop: name your journal entry")
 
-        title = self._jobject.metadata['title']
+        title = self._jobject.metadata["title"]
         alert.entry = alert.add_entry()
         alert.entry.set_text(title)
 
         label, tip = self._get_save_label_tip(title)
-        button = alert.add_button(Gtk.ResponseType.OK, label,
-                                  Icon(icon_name='dialog-ok'))
+        button = alert.add_button(
+            Gtk.ResponseType.OK, label, Icon(icon_name="dialog-ok")
+        )
 
-        if self.sugar_accel_group and hasattr(self.sugar_accel_group, 'set_accels_for_action'):
-            self.sugar_accel_group.set_accels_for_action('win.save', ['Return'])
+        if self.sugar_accel_group and hasattr(
+            self.sugar_accel_group, "set_accels_for_action"
+        ):
+            self.sugar_accel_group.set_accels_for_action("win.save", ["Return"])
 
         button.set_tooltip_text(tip)
         alert.ok = button
 
         label, tip = self._get_erase_label_tip()
-        button = alert.add_button(Gtk.ResponseType.ACCEPT, label,
-                                  Icon(icon_name='list-remove'))
+        button = alert.add_button(
+            Gtk.ResponseType.ACCEPT, label, Icon(icon_name="list-remove")
+        )
         button.set_tooltip_text(tip)
 
-        button = alert.add_button(Gtk.ResponseType.CANCEL, _('Cancel'),
-                                  Icon(icon_name='dialog-cancel'))
+        button = alert.add_button(
+            Gtk.ResponseType.CANCEL, _("Cancel"), Icon(icon_name="dialog-cancel")
+        )
 
         # GTK4: Accelerators are handled differently
-        if self.sugar_accel_group and hasattr(self.sugar_accel_group, 'set_accels_for_action'):
-            self.sugar_accel_group.set_accels_for_action('win.cancel', ['Escape'])
+        if self.sugar_accel_group and hasattr(
+            self.sugar_accel_group, "set_accels_for_action"
+        ):
+            self.sugar_accel_group.set_accels_for_action("win.cancel", ["Escape"])
 
-        button.set_tooltip_text(_('Cancel stop and continue the activity'))
+        button.set_tooltip_text(_("Cancel stop and continue the activity"))
 
-        alert.connect('response', self.__stop_dialog_response_cb)
-        alert.entry.connect('changed', self.__stop_dialog_changed_cb, alert)
+        alert.connect("response", self.__stop_dialog_response_cb)
+        alert.entry.connect("changed", self.__stop_dialog_changed_cb, alert)
         self.add_alert(alert)
 
     def __stop_dialog_response_cb(self, alert, response_id):
         """Handle stop dialog response."""
         if response_id == Gtk.ResponseType.OK:
             title = alert.entry.get_text()
-            if self._is_resumed and \
-                    title == self._original_title:
+            if self._is_resumed and title == self._original_title:
                 datastore.delete(self._jobject_old.get_object_id())
-            self._jobject.metadata['title'] = title
+            self._jobject.metadata["title"] = title
             self._do_close(False)
 
         if response_id == Gtk.ResponseType.ACCEPT:
@@ -1361,25 +1386,24 @@ class Activity(Window):
 
     def _get_save_label_tip(self, title):
         """Get save button label and tooltip."""
-        label = _('Save new')
-        tip = _('Save a new journal entry')
-        if self._is_resumed and \
-                title == self._original_title:
-            label = _('Save')
-            tip = _('Save into the old journal entry')
+        label = _("Save new")
+        tip = _("Save a new journal entry")
+        if self._is_resumed and title == self._original_title:
+            label = _("Save")
+            tip = _("Save into the old journal entry")
 
         return label, tip
 
     def _get_erase_label_tip(self):
         """Get erase button label and tooltip."""
         if self._is_resumed:
-            label = _('Erase changes')
-            tip = _('Erase what you have done, '
-                    'and leave your old journal entry unchanged')
+            label = _("Erase changes")
+            tip = _(
+                "Erase what you have done, and leave your old journal entry unchanged"
+            )
         else:
-            label = _('Erase')
-            tip = _('Erase what you have done, '
-                    'and avoid making a journal entry')
+            label = _("Erase")
+            tip = _("Erase what you have done, and avoid making a journal entry")
 
         return label, tip
 
@@ -1389,7 +1413,7 @@ class Activity(Window):
             try:
                 self.save()
             except BaseException:
-                logging.exception('Error saving activity object to datastore')
+                logging.exception("Error saving activity object to datastore")
                 self._show_keep_failed_dialog()
                 return False
 
@@ -1417,7 +1441,7 @@ class Activity(Window):
     def _do_close(self, skip_save):
         """Internal close method."""
         self.busy()
-        self.emit('closing')
+        self.emit("closing")
         if not self._closing:
             if not self._prepare_close(skip_save):
                 return
@@ -1444,7 +1468,7 @@ class Activity(Window):
             return
 
         if get_save_as():
-            if self._jobject.metadata['title'] != self._original_title:
+            if self._jobject.metadata["title"] != self._original_title:
                 self._do_close(skip_save)
             else:
                 self._show_stop_dialog()
@@ -1517,7 +1541,7 @@ class Activity(Window):
         """
         if self._busy_count == 0:
             # GTK4: Different cursor handling
-            cursor = Gdk.Cursor.new_from_name('wait', None)
+            cursor = Gdk.Cursor.new_from_name("wait", None)
             self.set_cursor(cursor)
         self._busy_count += 1
 
@@ -1597,7 +1621,7 @@ def get_bundle_name():
     Returns:
         str: the bundle name for the current process' bundle
     """
-    return os.environ['SUGAR_BUNDLE_NAME']
+    return os.environ["SUGAR_BUNDLE_NAME"]
 
 
 def get_bundle_path():
@@ -1605,7 +1629,7 @@ def get_bundle_path():
     Returns:
         str: the bundle path for the current process' bundle
     """
-    return os.environ['SUGAR_BUNDLE_PATH']
+    return os.environ["SUGAR_BUNDLE_PATH"]
 
 
 def get_activity_root():
@@ -1626,10 +1650,10 @@ def get_activity_root():
     is in anyway specific to a journal entry, it MUST be stored in the
     DataStore.
     """
-    if os.environ.get('SUGAR_ACTIVITY_ROOT'):
-        return os.environ['SUGAR_ACTIVITY_ROOT']
+    if os.environ.get("SUGAR_ACTIVITY_ROOT"):
+        return os.environ["SUGAR_ACTIVITY_ROOT"]
     else:
-        activity_root = env.get_profile_path(os.environ['SUGAR_BUNDLE_ID'])
+        activity_root = env.get_profile_path(os.environ["SUGAR_BUNDLE_ID"])
         try:
             os.mkdir(activity_root)
         except OSError as e:
@@ -1654,35 +1678,33 @@ def show_object_in_journal(object_id):
     )
 
 
-def launch_bundle(bundle_id='', object_id=''):
+def launch_bundle(bundle_id="", object_id=""):
     """
     Launch an activity for a journal object, or an activity.
 
     Args:
         bundle_id (str): activity bundle id, optional
         object_id (object): journal object
-
-    Note: In GTK4/Flatpak environment, this functionality will need
-    to be implemented using the application portal.
     """
-    raise NotImplementedError(
-        "Bundle launching not yet implemented in GTK4 port. "
-        "Use Flatpak for application launching."
-    )
+    bus = dbus.SessionBus()
+    obj = bus.get_object(J_DBUS_SERVICE, J_DBUS_PATH)
+    bundle_launcher = dbus.Interface(obj, J_DBUS_INTERFACE)
+    return bundle_launcher.LaunchBundle(bundle_id, object_id)
 
 
-def get_bundle(bundle_id='', object_id=''):
+def get_bundle(bundle_id="", object_id=""):
     """
     Get the bundle id of an activity that can open a journal object.
 
     Args:
         bundle_id (str): activity bundle id, optional
         object_id (object): journal object
-
-    Note: In GTK4/Flatpak environment, this functionality will need
-    to be implemented differently.
     """
-    raise NotImplementedError(
-        "Bundle lookup not yet implemented in GTK4 port. "
-        "Use Flatpak for bundle management."
-    )
+    bus = dbus.SessionBus()
+    obj = bus.get_object(J_DBUS_SERVICE, J_DBUS_PATH)
+    journal = dbus.Interface(obj, J_DBUS_INTERFACE)
+    bundle_path = journal.GetBundlePath(bundle_id, object_id)
+    if bundle_path:
+        return bundle_from_dir(bundle_path)
+    else:
+        return None
