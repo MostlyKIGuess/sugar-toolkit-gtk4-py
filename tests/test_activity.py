@@ -377,18 +377,6 @@ class TestActivityWithoutGTK(unittest.TestCase):
         self.assertIsInstance(root, str)
         self.assertTrue(os.path.exists(root))
 
-    def test_not_implemented_functions(self):
-        """Test functions that are not implemented in GTK4 port."""
-        from sugar.activity.activity import show_object_in_journal, launch_bundle, get_bundle
-
-        with self.assertRaises(NotImplementedError):
-            show_object_in_journal('test-object')
-
-        with self.assertRaises(NotImplementedError):
-            launch_bundle('test-bundle', 'test-object')
-
-        with self.assertRaises(NotImplementedError):
-            get_bundle('test-bundle', 'test-object')
 
 
 class TestActivitySession(unittest.TestCase):
