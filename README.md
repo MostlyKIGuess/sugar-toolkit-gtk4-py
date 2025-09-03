@@ -19,11 +19,14 @@ This project is a ground-up reimplementation of the Sugar Toolkit using GTK4 and
 | **Window** | Done | `sugar.graphics` | Enhanced window management for GTK4 |
 | **Palette** | Done | `sugar.graphics` | Full Palette system (popups, groups, menus, invokers) |
 | **ToolbarBox** | Done | `sugar.graphics` | Activity toolbar container |
+| **ToggleToolButton** | Done | `sugar.graphics` | Toggle toolbar Button |
+| **ComboBox** | Done | `sugar.graphics` |  Combo box container |
+| **ToolComboBox** | Done | `sugar.graphics` |  Tool Combo box container |
 | **ToolButton** | Done | `sugar.graphics` | GTK4 ToolButton and RadioToolButton implementations |
 | **Tray** | Done | `sugar.graphics` | Tray widgets and integration helpers |
 | **Datastore** | Done | `sugar.datastore` | Journal/datastore helpers: create/read/write/find activity objects |
 | **Presence** | Done | `sugar.presence` | Telepathy/Presence integration (sharing, buddies, activity discovery) |
-| **Bundle** | In Works | `sugar.bundle` | Activity bundle helpers and metadata (bundle path, icon, manifest helpers) |
+| **Bundle** | Done | `sugar.bundle` | Activity bundle helpers and metadata (bundle path, icon, manifest helpers) |
 
 - More to be Added!
 
@@ -184,9 +187,10 @@ make check            # Final verification before upload
 make ci-test          # Runs the full CI pipeline simulation
 ```
 
-# Dev Tips:
+# Dev Tips
 
 - Run the examples with:
+
 ```
  GTK_DEBUG=interactive QT_QPA_PLATFORM=xcb GDK_BACKEND=x11 \
 SUGAR_BUNDLE_PATH="$(pwd)/examples" \

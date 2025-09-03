@@ -116,18 +116,34 @@ sugar.graphics.toolbox module
    :show-inheritance:
    :undoc-members:
 
-sugar.graphics.toolbutton module
---------------------------------
+sugar.graphics.combobox module
+-----------------------------
 
-.. automodule:: sugar.graphics.toolbutton
+.. automodule:: sugar.graphics.combobox
    :members:
    :show-inheritance:
    :undoc-members:
 
-sugar.graphics.tray module
---------------------------
+sugar.graphics.toolcombobox module
+-----------------------------
 
-.. automodule:: sugar.graphics.tray
+.. automodule:: sugar.graphics.toolcombobox
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+sugar.graphics.toggletoolbutton module
+-----------------------------
+
+.. automodule:: sugar.graphics.toggletoolbutton
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+sugar.graphics.toolbutton module
+--------------------------------
+
+.. automodule:: sugar.graphics.toolbutton
    :members:
    :show-inheritance:
    :undoc-members:
