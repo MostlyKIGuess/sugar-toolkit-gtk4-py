@@ -22,8 +22,8 @@ sys.path.insert(0, os.path.abspath("../src"))
 project = "Sugar-Toolkit-GTK4"
 copyright = "2025, MostlyK"
 author = "MostlyK"
-release = "1.1.1"
-version = "1.1.1"
+release = "1.1.2"
+version = "1.1.2"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
