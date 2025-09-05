@@ -15,11 +15,11 @@ import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-if 'SUGAR_BUNDLE_ID' not in os.environ:
-    os.environ['SUGAR_BUNDLE_ID'] = 'org.sugarlabs.BasicExample'
-    os.environ['SUGAR_BUNDLE_NAME'] = 'Basic Example'
-    os.environ['SUGAR_BUNDLE_PATH'] = os.path.dirname(__file__)
-    os.environ['SUGAR_ACTIVITY_ROOT'] = '/tmp/basic_example'
+if "SUGAR_BUNDLE_ID" not in os.environ:
+    os.environ["SUGAR_BUNDLE_ID"] = "org.sugarlabs.BasicExample"
+    os.environ["SUGAR_BUNDLE_NAME"] = "Basic Example"
+    os.environ["SUGAR_BUNDLE_PATH"] = os.path.dirname(__file__)
+    os.environ["SUGAR_ACTIVITY_ROOT"] = "/tmp/basic_example"
 
 import gi
 
@@ -45,7 +45,7 @@ class BasicExampleActivity(Activity):
         """Initialize the activity."""
         # Create handle if not provided (for testing)
         if handle is None:
-            handle = ActivityHandle('basic-example-123')
+            handle = ActivityHandle("basic-example-123")
 
         # Initialize the parent
         Activity.__init__(self, handle, application=application)
@@ -79,31 +79,31 @@ class BasicExampleActivity(Activity):
         # Add custom button
         hello_button = Gtk.Button()
         hello_button.set_label("Say Hello")
-        hello_button.connect('clicked', self._hello_button_clicked)
+        hello_button.connect("clicked", self._hello_button_clicked)
         toolbar_box.toolbar.append(hello_button)
 
         # Add counter button
         counter_button = Gtk.Button()
         counter_button.set_label("Count")
-        counter_button.connect('clicked', self._counter_button_clicked)
+        counter_button.connect("clicked", self._counter_button_clicked)
         toolbar_box.toolbar.append(counter_button)
 
         # Add notification button
         notify_button = Gtk.Button()
         notify_button.set_label("Notify")
-        notify_button.connect('clicked', self._notify_button_clicked)
+        notify_button.connect("clicked", self._notify_button_clicked)
         toolbar_box.toolbar.append(notify_button)
 
         # Add save button
         save_button = Gtk.Button()
         save_button.set_label("Save to File")
-        save_button.connect('clicked', self._save_button_clicked)
+        save_button.connect("clicked", self._save_button_clicked)
         toolbar_box.toolbar.append(save_button)
 
         # Add load button
         load_button = Gtk.Button()
         load_button.set_label("Load from File")
-        load_button.connect('clicked', self._load_button_clicked)
+        load_button.connect("clicked", self._load_button_clicked)
         toolbar_box.toolbar.append(load_button)
 
         # Add spacer to push stop button to the right
@@ -128,18 +128,24 @@ class BasicExampleActivity(Activity):
 
         # Title
         title_label = Gtk.Label()
-        title_label.set_markup("<span size='x-large' weight='bold'>Basic Sugar Activity Example</span>")
+        title_label.set_markup(
+            "<span size='x-large' weight='bold'>Basic Sugar Activity Example</span>"
+        )
         title_label.set_halign(Gtk.Align.CENTER)
         main_box.append(title_label)
 
         # Subtitle
         subtitle_label = Gtk.Label()
-        subtitle_label.set_markup("<span style='italic'>Running with Sugar Activity framework</span>")
+        subtitle_label.set_markup(
+            "<span style='italic'>Running with Sugar Activity framework</span>"
+        )
         subtitle_label.set_halign(Gtk.Align.CENTER)
         main_box.append(subtitle_label)
 
         self._status_label = Gtk.Label()
-        self._status_label.set_text("Welcome! Click the toolbar buttons to test features.")
+        self._status_label.set_text(
+            "Welcome! Click the toolbar buttons to test features."
+        )
         self._status_label.set_halign(Gtk.Align.CENTER)
         self._status_label.set_wrap(True)
         main_box.append(self._status_label)
@@ -154,7 +160,7 @@ class BasicExampleActivity(Activity):
         self._text_view = Gtk.TextView()
         self._text_view.set_wrap_mode(Gtk.WrapMode.WORD)
         self._text_buffer = self._text_view.get_buffer()
-        self._text_buffer.connect('changed', self._text_changed_cb)
+        self._text_buffer.connect("changed", self._text_changed_cb)
 
         scrolled.set_child(self._text_view)
         text_frame.set_child(scrolled)
@@ -185,7 +191,9 @@ class BasicExampleActivity(Activity):
         info_box.append(bundle_label)
 
         name_label = Gtk.Label()
-        name_label.set_markup(f"<b>Bundle Name:</b> {os.environ.get('SUGAR_BUNDLE_NAME', 'N/A')}")
+        name_label.set_markup(
+            f"<b>Bundle Name:</b> {os.environ.get('SUGAR_BUNDLE_NAME', 'N/A')}"
+        )
         name_label.set_halign(Gtk.Align.START)
         info_box.append(name_label)
 
@@ -206,12 +214,12 @@ class BasicExampleActivity(Activity):
 
     def _update_active_label(self):
         """Update the active state label."""
-        if hasattr(self, '_active_label'):
+        if hasattr(self, "_active_label"):
             self._active_label.set_markup(f"<b>Active:</b> {self.get_active()}")
 
     def _update_shared_label(self):
         """Update the shared state label."""
-        if hasattr(self, '_shared_label'):
+        if hasattr(self, "_shared_label"):
             self._shared_label.set_markup(f"<b>Shared:</b> {self.get_shared()}")
 
     def _hello_button_clicked(self, button):
@@ -219,12 +227,12 @@ class BasicExampleActivity(Activity):
         self._status_label.set_text("Hello! This is a Sugar Activity running on GTK4.")
 
         alert = Alert()
-        alert.props.title = 'Hello!'
-        alert.props.msg = 'This demonstrates the alert system in Sugar GTK4.'
+        alert.props.title = "Hello!"
+        alert.props.msg = "This demonstrates the alert system in Sugar GTK4."
 
-        ok_icon = Icon(icon_name='dialog-ok')
-        alert.add_button(Gtk.ResponseType.OK, 'OK', ok_icon)
-        alert.connect('response', self._alert_response_cb)
+        ok_icon = Icon(icon_name="dialog-ok")
+        alert.add_button(Gtk.ResponseType.OK, "OK", ok_icon)
+        alert.connect("response", self._alert_response_cb)
 
         self.add_alert(alert)
 
@@ -236,21 +244,27 @@ class BasicExampleActivity(Activity):
 
     def _notify_button_clicked(self, button):
         """Handle notification button click."""
-        if hasattr(self, 'notify_user'):
+        if hasattr(self, "notify_user"):
             try:
-                self.notify_user('Test Notification',
-                               f'This is a test notification from the activity. Counter: {self._counter}')
+                self.notify_user(
+                    "Test Notification",
+                    f"This is a test notification from the activity. Counter: {self._counter}",
+                )
                 self._status_label.set_text("Notification sent!")
             except Exception as e:
                 self._status_label.set_text(f"Notification error: {e}")
         else:
             if self.get_application():
                 notification = Gio.Notification.new("Test Notification")
-                notification.set_body(f"This is a test notification from the activity. Counter: {self._counter}")
+                notification.set_body(
+                    f"This is a test notification from the activity. Counter: {self._counter}"
+                )
                 self.get_application().send_notification(self.get_id(), notification)
                 self._status_label.set_text("Notification sent!")
             else:
-                self._status_label.set_text("Notification: No application context available")
+                self._status_label.set_text(
+                    "Notification: No application context available"
+                )
 
     def _save_button_clicked(self, button):
         """Handle save button click."""
@@ -261,14 +275,14 @@ class BasicExampleActivity(Activity):
             file_path = os.path.join(save_dir, f"activity_data_{self.get_id()}.json")
 
             data = {
-                'text_content': self._text_content,
-                'counter': self._counter,
-                'activity_id': self.get_id(),
-                'bundle_id': self.get_bundle_id(),
-                'saved_at': GLib.DateTime.new_now_local().format_iso8601()
+                "text_content": self._text_content,
+                "counter": self._counter,
+                "activity_id": self.get_id(),
+                "bundle_id": self.get_bundle_id(),
+                "saved_at": GLib.DateTime.new_now_local().format_iso8601(),
             }
 
-            with open(file_path, 'w') as f:
+            with open(file_path, "w") as f:
                 json.dump(data, f, indent=2)
 
             self._status_label.set_text(f"Saved to {file_path}")
@@ -279,25 +293,27 @@ class BasicExampleActivity(Activity):
     def _load_button_clicked(self, button):
         """Handle load button click."""
         try:
-            file_path = os.path.join(os.path.expanduser("~/Documents/SugarActivity"),
-                                   f"activity_data_{self.get_id()}.json")
+            file_path = os.path.join(
+                os.path.expanduser("~/Documents/SugarActivity"),
+                f"activity_data_{self.get_id()}.json",
+            )
 
             if not os.path.exists(file_path):
                 self._status_label.set_text("No saved file found")
                 return
 
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 data = json.load(f)
 
-            self._text_content = data.get('text_content', '')
+            self._text_content = data.get("text_content", "")
             if self._text_buffer:
                 self._text_buffer.set_text(self._text_content)
 
-            self._counter = data.get('counter', 0)
-            if hasattr(self, '_counter_label'):
+            self._counter = data.get("counter", 0)
+            if hasattr(self, "_counter_label"):
                 self._counter_label.set_text(f"Counter: {self._counter}")
 
-            saved_at = data.get('saved_at', 'unknown time')
+            saved_at = data.get("saved_at", "unknown time")
             self._status_label.set_text(f"Loaded from file (saved at {saved_at[:19]})")
 
         except Exception as e:
@@ -329,15 +345,15 @@ class BasicExampleActivity(Activity):
     def read_file(self, file_path):
         """Read activity data from file."""
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 data = json.load(f)
 
-            self._text_content = data.get('text_content', '')
-            if hasattr(self, '_text_buffer'):
+            self._text_content = data.get("text_content", "")
+            if hasattr(self, "_text_buffer"):
                 self._text_buffer.set_text(self._text_content)
 
-            self._counter = data.get('counter', 0)
-            if hasattr(self, '_counter_label'):
+            self._counter = data.get("counter", 0)
+            if hasattr(self, "_counter_label"):
                 self._counter_label.set_text(f"Counter: {self._counter}")
 
         except Exception as e:
@@ -346,15 +362,24 @@ class BasicExampleActivity(Activity):
     def write_file(self, file_path):
         """Write activity data to file."""
         try:
+            if not hasattr(self, "_text_content"):
+                logging.warning(
+                    "_text_content attribute missing; setting to empty string."
+                )
+                self._text_content = ""
+            import datetime
+
             data = {
-                'text_content': self._text_content,
-                'counter': self._counter,
-                'activity_id': self.get_id(),
-                'bundle_id': self.get_bundle_id(),
-                'saved_at': GLib.DateTime.new_now_local().format_iso8601()
+                "text_content": self._text_content,
+                "counter": self._counter,
+                "activity_id": self.get_id(),
+                "bundle_id": self.get_bundle_id(),
+                "saved_at": datetime.datetime.now().isoformat(),
             }
 
-            with open(file_path, 'w') as f:
+            parent_dir = os.path.dirname(file_path)
+            os.makedirs(parent_dir, exist_ok=True)
+            with open(file_path, "w") as f:
                 json.dump(data, f, indent=2)
 
         except Exception as e:
@@ -366,15 +391,17 @@ class BasicExampleApplication(Gtk.Application):
     """Application wrapper for the activity."""
 
     def __init__(self):
-        super().__init__(application_id='org.sugarlabs.BasicExample',
-                         flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+        super().__init__(
+            application_id="org.sugarlabs.BasicExample",
+            flags=Gio.ApplicationFlags.DEFAULT_FLAGS,
+        )
         self.activity = None
 
     def do_activate(self):
         """Activate the application."""
         if not self.activity:
             # Create activity handle
-            handle = ActivityHandle('basic-example-123')
+            handle = ActivityHandle("basic-example-123")
 
             # Create the activity
             self.activity = BasicExampleActivity(handle, application=self)
