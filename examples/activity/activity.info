@@ -1,0 +1,8 @@
+[Activity]
+name = Sugar Examples
+activity_version = 1
+host_version = 1
+bundle_id = org.sugarlabs.SugarExamples
+license = GPLv3
+icon = activity-sugar-example
+exec = python3 activity_example.py
